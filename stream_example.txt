@@ -1,0 +1,1857 @@
+add rcp user admin admin 10.10.11.62 1000
+
+set syslog status enable
+add syslog host 10.10.11.183 514
+
+
+add snmp agent viewscope aaa
+add snmp agent community public ro aaa
+
+
+create link-group 1 i2c-port-intf HGE0/0-0 c2i-port-intf HGE0/1-0
+bind link-group 1 protect-channel 4 0
+set link-group 1 protect-access-mode  pass
+
+create link-group 2 i2c-port-intf HGE1/0-0 c2i-port-intf HGE1/1-0
+bind link-group 2 protect-channel 4 2
+set link-group 2 protect-access-mode  pass
+
+set link-group 1 protect-run-mode soft-auto
+set link-group 1 protect-cutback-mode auto
+set link-group 2 protect-run-mode soft-auto
+set link-group 2 protect-cutback-mode auto
+
+set intf XGE0/0~XGE0/15 rx disable tx enable
+set intf XGE1/0~XGE1/15 rx disable tx enable
+
+create redirect-group 1 intf XGE0/0~XGE0/15
+add redirect-group 1 intf XGE1/0~XGE1/15
+
+add redirect-group 1 ip 3.3.3.3,255.255.255.0
+set redirect-group 1 mac 00:a5:bb:3d:c1:ac
+
+create server-group 1 ip 50.6.0.1 mask 255.255.255.255
+create loopback 1 ip 60.6.0.1,255.255.255.0
+
+##路由和arp
+add ip-route '50.6.0.0,255.255.255.0' nexthop-ip '5.5.5.5'
+add nexthop-ip 5.5.5.5 mac 00:00:22:33:44:55 egress 1
+
+##脚本下发255业务
+create service 0 action discard redirect-group 1 server-group 1 loopback 1 
+create service 1 action discard redirect-group 1 server-group 1 loopback 1 
+create service 2 action discard redirect-group 1 server-group 1 loopback 1 
+create service 3 action discard redirect-group 1 server-group 1 loopback 1 
+create service 4 action discard redirect-group 1 server-group 1 loopback 1 
+create service 5 action discard redirect-group 1 server-group 1 loopback 1 
+create service 6 action discard redirect-group 1 server-group 1 loopback 1 
+create service 7 action discard redirect-group 1 server-group 1 loopback 1 
+create service 8 action discard redirect-group 1 server-group 1 loopback 1 
+create service 9 action discard redirect-group 1 server-group 1 loopback 1 
+create service 10 action discard redirect-group 1 server-group 1 loopback 1 
+create service 11 action discard redirect-group 1 server-group 1 loopback 1 
+create service 12 action discard redirect-group 1 server-group 1 loopback 1 
+create service 13 action discard redirect-group 1 server-group 1 loopback 1 
+create service 14 action discard redirect-group 1 server-group 1 loopback 1 
+create service 15 action discard redirect-group 1 server-group 1 loopback 1 
+create service 16 action discard redirect-group 1 server-group 1 loopback 1 
+create service 17 action discard redirect-group 1 server-group 1 loopback 1 
+create service 18 action discard redirect-group 1 server-group 1 loopback 1 
+create service 19 action discard redirect-group 1 server-group 1 loopback 1 
+create service 20 action discard redirect-group 1 server-group 1 loopback 1 
+create service 21 action discard redirect-group 1 server-group 1 loopback 1 
+create service 22 action discard redirect-group 1 server-group 1 loopback 1 
+create service 23 action discard redirect-group 1 server-group 1 loopback 1 
+create service 24 action discard redirect-group 1 server-group 1 loopback 1 
+create service 25 action discard redirect-group 1 server-group 1 loopback 1 
+create service 26 action discard redirect-group 1 server-group 1 loopback 1 
+create service 27 action discard redirect-group 1 server-group 1 loopback 1 
+create service 28 action discard redirect-group 1 server-group 1 loopback 1 
+create service 29 action discard redirect-group 1 server-group 1 loopback 1 
+create service 30 action discard redirect-group 1 server-group 1 loopback 1 
+create service 31 action discard redirect-group 1 server-group 1 loopback 1 
+create service 32 action discard redirect-group 1 server-group 1 loopback 1 
+create service 33 action discard redirect-group 1 server-group 1 loopback 1 
+create service 34 action discard redirect-group 1 server-group 1 loopback 1 
+create service 35 action discard redirect-group 1 server-group 1 loopback 1 
+create service 36 action discard redirect-group 1 server-group 1 loopback 1 
+create service 37 action discard redirect-group 1 server-group 1 loopback 1 
+create service 38 action discard redirect-group 1 server-group 1 loopback 1 
+create service 39 action discard redirect-group 1 server-group 1 loopback 1 
+create service 40 action discard redirect-group 1 server-group 1 loopback 1 
+create service 41 action discard redirect-group 1 server-group 1 loopback 1 
+create service 42 action discard redirect-group 1 server-group 1 loopback 1 
+create service 43 action discard redirect-group 1 server-group 1 loopback 1 
+create service 44 action discard redirect-group 1 server-group 1 loopback 1 
+create service 45 action discard redirect-group 1 server-group 1 loopback 1 
+create service 46 action discard redirect-group 1 server-group 1 loopback 1 
+create service 47 action discard redirect-group 1 server-group 1 loopback 1 
+create service 48 action discard redirect-group 1 server-group 1 loopback 1 
+create service 49 action discard redirect-group 1 server-group 1 loopback 1 
+create service 50 action discard redirect-group 1 server-group 1 loopback 1 
+create service 51 action discard redirect-group 1 server-group 1 loopback 1 
+create service 52 action discard redirect-group 1 server-group 1 loopback 1 
+create service 53 action discard redirect-group 1 server-group 1 loopback 1 
+create service 54 action discard redirect-group 1 server-group 1 loopback 1 
+create service 55 action discard redirect-group 1 server-group 1 loopback 1 
+create service 56 action discard redirect-group 1 server-group 1 loopback 1 
+create service 57 action discard redirect-group 1 server-group 1 loopback 1 
+create service 58 action discard redirect-group 1 server-group 1 loopback 1 
+create service 59 action discard redirect-group 1 server-group 1 loopback 1 
+create service 60 action discard redirect-group 1 server-group 1 loopback 1 
+create service 61 action discard redirect-group 1 server-group 1 loopback 1 
+create service 62 action discard redirect-group 1 server-group 1 loopback 1 
+create service 63 action discard redirect-group 1 server-group 1 loopback 1 
+create service 64 action discard redirect-group 1 server-group 1 loopback 1 
+create service 65 action discard redirect-group 1 server-group 1 loopback 1 
+create service 66 action discard redirect-group 1 server-group 1 loopback 1 
+create service 67 action discard redirect-group 1 server-group 1 loopback 1 
+create service 68 action discard redirect-group 1 server-group 1 loopback 1 
+create service 69 action discard redirect-group 1 server-group 1 loopback 1 
+create service 70 action discard redirect-group 1 server-group 1 loopback 1 
+create service 71 action discard redirect-group 1 server-group 1 loopback 1 
+create service 72 action discard redirect-group 1 server-group 1 loopback 1 
+create service 73 action discard redirect-group 1 server-group 1 loopback 1 
+create service 74 action discard redirect-group 1 server-group 1 loopback 1 
+create service 75 action discard redirect-group 1 server-group 1 loopback 1 
+create service 76 action discard redirect-group 1 server-group 1 loopback 1 
+create service 77 action discard redirect-group 1 server-group 1 loopback 1 
+create service 78 action discard redirect-group 1 server-group 1 loopback 1 
+create service 79 action discard redirect-group 1 server-group 1 loopback 1 
+create service 80 action discard redirect-group 1 server-group 1 loopback 1 
+create service 81 action discard redirect-group 1 server-group 1 loopback 1 
+create service 82 action discard redirect-group 1 server-group 1 loopback 1 
+create service 83 action discard redirect-group 1 server-group 1 loopback 1 
+create service 84 action discard redirect-group 1 server-group 1 loopback 1 
+create service 85 action discard redirect-group 1 server-group 1 loopback 1 
+create service 86 action discard redirect-group 1 server-group 1 loopback 1 
+create service 87 action discard redirect-group 1 server-group 1 loopback 1 
+create service 88 action discard redirect-group 1 server-group 1 loopback 1 
+create service 89 action discard redirect-group 1 server-group 1 loopback 1 
+create service 90 action discard redirect-group 1 server-group 1 loopback 1 
+create service 91 action discard redirect-group 1 server-group 1 loopback 1 
+create service 92 action discard redirect-group 1 server-group 1 loopback 1 
+create service 93 action discard redirect-group 1 server-group 1 loopback 1 
+create service 94 action discard redirect-group 1 server-group 1 loopback 1 
+create service 95 action discard redirect-group 1 server-group 1 loopback 1 
+create service 96 action discard redirect-group 1 server-group 1 loopback 1 
+create service 97 action discard redirect-group 1 server-group 1 loopback 1 
+create service 98 action discard redirect-group 1 server-group 1 loopback 1 
+create service 99 action discard redirect-group 1 server-group 1 loopback 1 
+create service 100 action discard redirect-group 1 server-group 1 loopback 1 
+create service 101 action discard redirect-group 1 server-group 1 loopback 1 
+create service 102 action discard redirect-group 1 server-group 1 loopback 1 
+create service 103 action discard redirect-group 1 server-group 1 loopback 1 
+create service 104 action discard redirect-group 1 server-group 1 loopback 1 
+create service 105 action discard redirect-group 1 server-group 1 loopback 1 
+create service 106 action discard redirect-group 1 server-group 1 loopback 1 
+create service 107 action discard redirect-group 1 server-group 1 loopback 1 
+create service 108 action discard redirect-group 1 server-group 1 loopback 1 
+create service 109 action discard redirect-group 1 server-group 1 loopback 1 
+create service 110 action discard redirect-group 1 server-group 1 loopback 1 
+create service 111 action discard redirect-group 1 server-group 1 loopback 1 
+create service 112 action discard redirect-group 1 server-group 1 loopback 1 
+create service 113 action discard redirect-group 1 server-group 1 loopback 1 
+create service 114 action discard redirect-group 1 server-group 1 loopback 1 
+create service 115 action discard redirect-group 1 server-group 1 loopback 1 
+create service 116 action discard redirect-group 1 server-group 1 loopback 1 
+create service 117 action discard redirect-group 1 server-group 1 loopback 1 
+create service 118 action discard redirect-group 1 server-group 1 loopback 1 
+create service 119 action discard redirect-group 1 server-group 1 loopback 1 
+create service 120 action discard redirect-group 1 server-group 1 loopback 1 
+create service 121 action discard redirect-group 1 server-group 1 loopback 1 
+create service 122 action discard redirect-group 1 server-group 1 loopback 1 
+create service 123 action discard redirect-group 1 server-group 1 loopback 1 
+create service 124 action discard redirect-group 1 server-group 1 loopback 1 
+create service 125 action discard redirect-group 1 server-group 1 loopback 1 
+create service 126 action discard redirect-group 1 server-group 1 loopback 1 
+create service 127 action discard redirect-group 1 server-group 1 loopback 1 
+create service 128 action discard redirect-group 1 server-group 1 loopback 1 
+create service 129 action discard redirect-group 1 server-group 1 loopback 1 
+create service 130 action discard redirect-group 1 server-group 1 loopback 1 
+create service 131 action discard redirect-group 1 server-group 1 loopback 1 
+create service 132 action discard redirect-group 1 server-group 1 loopback 1 
+create service 133 action discard redirect-group 1 server-group 1 loopback 1 
+create service 134 action discard redirect-group 1 server-group 1 loopback 1 
+create service 135 action discard redirect-group 1 server-group 1 loopback 1 
+create service 136 action discard redirect-group 1 server-group 1 loopback 1 
+create service 137 action discard redirect-group 1 server-group 1 loopback 1 
+create service 138 action discard redirect-group 1 server-group 1 loopback 1 
+create service 139 action discard redirect-group 1 server-group 1 loopback 1 
+create service 140 action discard redirect-group 1 server-group 1 loopback 1 
+create service 141 action discard redirect-group 1 server-group 1 loopback 1 
+create service 142 action discard redirect-group 1 server-group 1 loopback 1 
+create service 143 action discard redirect-group 1 server-group 1 loopback 1 
+create service 144 action discard redirect-group 1 server-group 1 loopback 1 
+create service 145 action discard redirect-group 1 server-group 1 loopback 1 
+create service 146 action discard redirect-group 1 server-group 1 loopback 1 
+create service 147 action discard redirect-group 1 server-group 1 loopback 1 
+create service 148 action discard redirect-group 1 server-group 1 loopback 1 
+create service 149 action discard redirect-group 1 server-group 1 loopback 1 
+create service 150 action discard redirect-group 1 server-group 1 loopback 1 
+create service 151 action discard redirect-group 1 server-group 1 loopback 1 
+create service 152 action discard redirect-group 1 server-group 1 loopback 1 
+create service 153 action discard redirect-group 1 server-group 1 loopback 1 
+create service 154 action discard redirect-group 1 server-group 1 loopback 1 
+create service 155 action discard redirect-group 1 server-group 1 loopback 1 
+create service 156 action discard redirect-group 1 server-group 1 loopback 1 
+create service 157 action discard redirect-group 1 server-group 1 loopback 1 
+create service 158 action discard redirect-group 1 server-group 1 loopback 1 
+create service 159 action discard redirect-group 1 server-group 1 loopback 1 
+create service 160 action discard redirect-group 1 server-group 1 loopback 1 
+create service 161 action discard redirect-group 1 server-group 1 loopback 1 
+create service 162 action discard redirect-group 1 server-group 1 loopback 1 
+create service 163 action discard redirect-group 1 server-group 1 loopback 1 
+create service 164 action discard redirect-group 1 server-group 1 loopback 1 
+create service 165 action discard redirect-group 1 server-group 1 loopback 1 
+create service 166 action discard redirect-group 1 server-group 1 loopback 1 
+create service 167 action discard redirect-group 1 server-group 1 loopback 1 
+create service 168 action discard redirect-group 1 server-group 1 loopback 1 
+create service 169 action discard redirect-group 1 server-group 1 loopback 1 
+create service 170 action discard redirect-group 1 server-group 1 loopback 1 
+create service 171 action discard redirect-group 1 server-group 1 loopback 1 
+create service 172 action discard redirect-group 1 server-group 1 loopback 1 
+create service 173 action discard redirect-group 1 server-group 1 loopback 1 
+create service 174 action discard redirect-group 1 server-group 1 loopback 1 
+create service 175 action discard redirect-group 1 server-group 1 loopback 1 
+create service 176 action discard redirect-group 1 server-group 1 loopback 1 
+create service 177 action discard redirect-group 1 server-group 1 loopback 1 
+create service 178 action discard redirect-group 1 server-group 1 loopback 1 
+create service 179 action discard redirect-group 1 server-group 1 loopback 1 
+create service 180 action discard redirect-group 1 server-group 1 loopback 1 
+create service 181 action discard redirect-group 1 server-group 1 loopback 1 
+create service 182 action discard redirect-group 1 server-group 1 loopback 1 
+create service 183 action discard redirect-group 1 server-group 1 loopback 1 
+create service 184 action discard redirect-group 1 server-group 1 loopback 1 
+create service 185 action discard redirect-group 1 server-group 1 loopback 1 
+create service 186 action discard redirect-group 1 server-group 1 loopback 1 
+create service 187 action discard redirect-group 1 server-group 1 loopback 1 
+create service 188 action discard redirect-group 1 server-group 1 loopback 1 
+create service 189 action discard redirect-group 1 server-group 1 loopback 1 
+create service 190 action discard redirect-group 1 server-group 1 loopback 1 
+create service 191 action discard redirect-group 1 server-group 1 loopback 1 
+create service 192 action discard redirect-group 1 server-group 1 loopback 1 
+create service 193 action discard redirect-group 1 server-group 1 loopback 1 
+create service 194 action discard redirect-group 1 server-group 1 loopback 1 
+create service 195 action discard redirect-group 1 server-group 1 loopback 1 
+create service 196 action discard redirect-group 1 server-group 1 loopback 1 
+create service 197 action discard redirect-group 1 server-group 1 loopback 1 
+create service 198 action discard redirect-group 1 server-group 1 loopback 1 
+create service 199 action discard redirect-group 1 server-group 1 loopback 1 
+create service 200 action discard redirect-group 1 server-group 1 loopback 1 
+create service 201 action discard redirect-group 1 server-group 1 loopback 1 
+create service 202 action discard redirect-group 1 server-group 1 loopback 1 
+create service 203 action discard redirect-group 1 server-group 1 loopback 1 
+create service 204 action discard redirect-group 1 server-group 1 loopback 1 
+create service 205 action discard redirect-group 1 server-group 1 loopback 1 
+create service 206 action discard redirect-group 1 server-group 1 loopback 1 
+create service 207 action discard redirect-group 1 server-group 1 loopback 1 
+create service 208 action discard redirect-group 1 server-group 1 loopback 1 
+create service 209 action discard redirect-group 1 server-group 1 loopback 1 
+create service 210 action discard redirect-group 1 server-group 1 loopback 1 
+create service 211 action discard redirect-group 1 server-group 1 loopback 1 
+create service 212 action discard redirect-group 1 server-group 1 loopback 1 
+create service 213 action discard redirect-group 1 server-group 1 loopback 1 
+create service 214 action discard redirect-group 1 server-group 1 loopback 1 
+create service 215 action discard redirect-group 1 server-group 1 loopback 1 
+create service 216 action discard redirect-group 1 server-group 1 loopback 1 
+create service 217 action discard redirect-group 1 server-group 1 loopback 1 
+create service 218 action discard redirect-group 1 server-group 1 loopback 1 
+create service 219 action discard redirect-group 1 server-group 1 loopback 1 
+create service 220 action discard redirect-group 1 server-group 1 loopback 1 
+create service 221 action discard redirect-group 1 server-group 1 loopback 1 
+create service 222 action discard redirect-group 1 server-group 1 loopback 1 
+create service 223 action discard redirect-group 1 server-group 1 loopback 1 
+create service 224 action discard redirect-group 1 server-group 1 loopback 1 
+create service 225 action discard redirect-group 1 server-group 1 loopback 1 
+create service 226 action discard redirect-group 1 server-group 1 loopback 1 
+create service 227 action discard redirect-group 1 server-group 1 loopback 1 
+create service 228 action discard redirect-group 1 server-group 1 loopback 1 
+create service 229 action discard redirect-group 1 server-group 1 loopback 1 
+create service 230 action discard redirect-group 1 server-group 1 loopback 1 
+create service 231 action discard redirect-group 1 server-group 1 loopback 1 
+create service 232 action discard redirect-group 1 server-group 1 loopback 1 
+create service 233 action discard redirect-group 1 server-group 1 loopback 1 
+create service 234 action discard redirect-group 1 server-group 1 loopback 1 
+create service 235 action discard redirect-group 1 server-group 1 loopback 1 
+create service 236 action discard redirect-group 1 server-group 1 loopback 1 
+create service 237 action discard redirect-group 1 server-group 1 loopback 1 
+create service 238 action discard redirect-group 1 server-group 1 loopback 1 
+create service 239 action discard redirect-group 1 server-group 1 loopback 1 
+create service 240 action discard redirect-group 1 server-group 1 loopback 1 
+create service 241 action discard redirect-group 1 server-group 1 loopback 1 
+create service 242 action discard redirect-group 1 server-group 1 loopback 1 
+create service 243 action discard redirect-group 1 server-group 1 loopback 1 
+create service 244 action discard redirect-group 1 server-group 1 loopback 1 
+create service 245 action discard redirect-group 1 server-group 1 loopback 1 
+create service 246 action discard redirect-group 1 server-group 1 loopback 1 
+create service 247 action discard redirect-group 1 server-group 1 loopback 1 
+create service 248 action discard redirect-group 1 server-group 1 loopback 1 
+create service 249 action discard redirect-group 1 server-group 1 loopback 1 
+create service 250 action discard redirect-group 1 server-group 1 loopback 1 
+create service 251 action discard redirect-group 1 server-group 1 loopback 1 
+create service 252 action discard redirect-group 1 server-group 1 loopback 1 
+create service 253 action discard redirect-group 1 server-group 1 loopback 1 
+create service 254 action discard redirect-group 1 server-group 1 loopback 1 
+
+############脚本下发强制保活
+set service 0 server-group 1 ip 50.6.0.1 mode manual_up
+set service 1 server-group 1 ip 50.6.0.1 mode manual_up
+set service 2 server-group 1 ip 50.6.0.1 mode manual_up
+set service 3 server-group 1 ip 50.6.0.1 mode manual_up
+set service 4 server-group 1 ip 50.6.0.1 mode manual_up
+set service 5 server-group 1 ip 50.6.0.1 mode manual_up
+set service 6 server-group 1 ip 50.6.0.1 mode manual_up
+set service 7 server-group 1 ip 50.6.0.1 mode manual_up
+set service 8 server-group 1 ip 50.6.0.1 mode manual_up
+set service 9 server-group 1 ip 50.6.0.1 mode manual_up
+set service 10 server-group 1 ip 50.6.0.1 mode manual_up
+set service 11 server-group 1 ip 50.6.0.1 mode manual_up
+set service 12 server-group 1 ip 50.6.0.1 mode manual_up
+set service 13 server-group 1 ip 50.6.0.1 mode manual_up
+set service 14 server-group 1 ip 50.6.0.1 mode manual_up
+set service 15 server-group 1 ip 50.6.0.1 mode manual_up
+set service 16 server-group 1 ip 50.6.0.1 mode manual_up
+set service 17 server-group 1 ip 50.6.0.1 mode manual_up
+set service 18 server-group 1 ip 50.6.0.1 mode manual_up
+set service 19 server-group 1 ip 50.6.0.1 mode manual_up
+set service 20 server-group 1 ip 50.6.0.1 mode manual_up
+set service 21 server-group 1 ip 50.6.0.1 mode manual_up
+set service 22 server-group 1 ip 50.6.0.1 mode manual_up
+set service 23 server-group 1 ip 50.6.0.1 mode manual_up
+set service 24 server-group 1 ip 50.6.0.1 mode manual_up
+set service 25 server-group 1 ip 50.6.0.1 mode manual_up
+set service 26 server-group 1 ip 50.6.0.1 mode manual_up
+set service 27 server-group 1 ip 50.6.0.1 mode manual_up
+set service 28 server-group 1 ip 50.6.0.1 mode manual_up
+set service 29 server-group 1 ip 50.6.0.1 mode manual_up
+set service 30 server-group 1 ip 50.6.0.1 mode manual_up
+set service 31 server-group 1 ip 50.6.0.1 mode manual_up
+set service 32 server-group 1 ip 50.6.0.1 mode manual_up
+set service 33 server-group 1 ip 50.6.0.1 mode manual_up
+set service 34 server-group 1 ip 50.6.0.1 mode manual_up
+set service 35 server-group 1 ip 50.6.0.1 mode manual_up
+set service 36 server-group 1 ip 50.6.0.1 mode manual_up
+set service 37 server-group 1 ip 50.6.0.1 mode manual_up
+set service 38 server-group 1 ip 50.6.0.1 mode manual_up
+set service 39 server-group 1 ip 50.6.0.1 mode manual_up
+set service 40 server-group 1 ip 50.6.0.1 mode manual_up
+set service 41 server-group 1 ip 50.6.0.1 mode manual_up
+set service 42 server-group 1 ip 50.6.0.1 mode manual_up
+set service 43 server-group 1 ip 50.6.0.1 mode manual_up
+set service 44 server-group 1 ip 50.6.0.1 mode manual_up
+set service 45 server-group 1 ip 50.6.0.1 mode manual_up
+set service 46 server-group 1 ip 50.6.0.1 mode manual_up
+set service 47 server-group 1 ip 50.6.0.1 mode manual_up
+set service 48 server-group 1 ip 50.6.0.1 mode manual_up
+set service 49 server-group 1 ip 50.6.0.1 mode manual_up
+set service 50 server-group 1 ip 50.6.0.1 mode manual_up
+set service 51 server-group 1 ip 50.6.0.1 mode manual_up
+set service 52 server-group 1 ip 50.6.0.1 mode manual_up
+set service 53 server-group 1 ip 50.6.0.1 mode manual_up
+set service 54 server-group 1 ip 50.6.0.1 mode manual_up
+set service 55 server-group 1 ip 50.6.0.1 mode manual_up
+set service 56 server-group 1 ip 50.6.0.1 mode manual_up
+set service 57 server-group 1 ip 50.6.0.1 mode manual_up
+set service 58 server-group 1 ip 50.6.0.1 mode manual_up
+set service 59 server-group 1 ip 50.6.0.1 mode manual_up
+set service 60 server-group 1 ip 50.6.0.1 mode manual_up
+set service 61 server-group 1 ip 50.6.0.1 mode manual_up
+set service 62 server-group 1 ip 50.6.0.1 mode manual_up
+set service 63 server-group 1 ip 50.6.0.1 mode manual_up
+set service 64 server-group 1 ip 50.6.0.1 mode manual_up
+set service 65 server-group 1 ip 50.6.0.1 mode manual_up
+set service 66 server-group 1 ip 50.6.0.1 mode manual_up
+set service 67 server-group 1 ip 50.6.0.1 mode manual_up
+set service 68 server-group 1 ip 50.6.0.1 mode manual_up
+set service 69 server-group 1 ip 50.6.0.1 mode manual_up
+set service 70 server-group 1 ip 50.6.0.1 mode manual_up
+set service 71 server-group 1 ip 50.6.0.1 mode manual_up
+set service 72 server-group 1 ip 50.6.0.1 mode manual_up
+set service 73 server-group 1 ip 50.6.0.1 mode manual_up
+set service 74 server-group 1 ip 50.6.0.1 mode manual_up
+set service 75 server-group 1 ip 50.6.0.1 mode manual_up
+set service 76 server-group 1 ip 50.6.0.1 mode manual_up
+set service 77 server-group 1 ip 50.6.0.1 mode manual_up
+set service 78 server-group 1 ip 50.6.0.1 mode manual_up
+set service 79 server-group 1 ip 50.6.0.1 mode manual_up
+set service 80 server-group 1 ip 50.6.0.1 mode manual_up
+set service 81 server-group 1 ip 50.6.0.1 mode manual_up
+set service 82 server-group 1 ip 50.6.0.1 mode manual_up
+set service 83 server-group 1 ip 50.6.0.1 mode manual_up
+set service 84 server-group 1 ip 50.6.0.1 mode manual_up
+set service 85 server-group 1 ip 50.6.0.1 mode manual_up
+set service 86 server-group 1 ip 50.6.0.1 mode manual_up
+set service 87 server-group 1 ip 50.6.0.1 mode manual_up
+set service 88 server-group 1 ip 50.6.0.1 mode manual_up
+set service 89 server-group 1 ip 50.6.0.1 mode manual_up
+set service 90 server-group 1 ip 50.6.0.1 mode manual_up
+set service 91 server-group 1 ip 50.6.0.1 mode manual_up
+set service 92 server-group 1 ip 50.6.0.1 mode manual_up
+set service 93 server-group 1 ip 50.6.0.1 mode manual_up
+set service 94 server-group 1 ip 50.6.0.1 mode manual_up
+set service 95 server-group 1 ip 50.6.0.1 mode manual_up
+set service 96 server-group 1 ip 50.6.0.1 mode manual_up
+set service 97 server-group 1 ip 50.6.0.1 mode manual_up
+set service 98 server-group 1 ip 50.6.0.1 mode manual_up
+set service 99 server-group 1 ip 50.6.0.1 mode manual_up
+set service 100 server-group 1 ip 50.6.0.1 mode manual_up
+set service 101 server-group 1 ip 50.6.0.1 mode manual_up
+set service 102 server-group 1 ip 50.6.0.1 mode manual_up
+set service 103 server-group 1 ip 50.6.0.1 mode manual_up
+set service 104 server-group 1 ip 50.6.0.1 mode manual_up
+set service 105 server-group 1 ip 50.6.0.1 mode manual_up
+set service 106 server-group 1 ip 50.6.0.1 mode manual_up
+set service 107 server-group 1 ip 50.6.0.1 mode manual_up
+set service 108 server-group 1 ip 50.6.0.1 mode manual_up
+set service 109 server-group 1 ip 50.6.0.1 mode manual_up
+set service 110 server-group 1 ip 50.6.0.1 mode manual_up
+set service 111 server-group 1 ip 50.6.0.1 mode manual_up
+set service 112 server-group 1 ip 50.6.0.1 mode manual_up
+set service 113 server-group 1 ip 50.6.0.1 mode manual_up
+set service 114 server-group 1 ip 50.6.0.1 mode manual_up
+set service 115 server-group 1 ip 50.6.0.1 mode manual_up
+set service 116 server-group 1 ip 50.6.0.1 mode manual_up
+set service 117 server-group 1 ip 50.6.0.1 mode manual_up
+set service 118 server-group 1 ip 50.6.0.1 mode manual_up
+set service 119 server-group 1 ip 50.6.0.1 mode manual_up
+set service 120 server-group 1 ip 50.6.0.1 mode manual_up
+set service 121 server-group 1 ip 50.6.0.1 mode manual_up
+set service 122 server-group 1 ip 50.6.0.1 mode manual_up
+set service 123 server-group 1 ip 50.6.0.1 mode manual_up
+set service 124 server-group 1 ip 50.6.0.1 mode manual_up
+set service 125 server-group 1 ip 50.6.0.1 mode manual_up
+set service 126 server-group 1 ip 50.6.0.1 mode manual_up
+set service 127 server-group 1 ip 50.6.0.1 mode manual_up
+set service 128 server-group 1 ip 50.6.0.1 mode manual_up
+set service 129 server-group 1 ip 50.6.0.1 mode manual_up
+set service 130 server-group 1 ip 50.6.0.1 mode manual_up
+set service 131 server-group 1 ip 50.6.0.1 mode manual_up
+set service 132 server-group 1 ip 50.6.0.1 mode manual_up
+set service 133 server-group 1 ip 50.6.0.1 mode manual_up
+set service 134 server-group 1 ip 50.6.0.1 mode manual_up
+set service 135 server-group 1 ip 50.6.0.1 mode manual_up
+set service 136 server-group 1 ip 50.6.0.1 mode manual_up
+set service 137 server-group 1 ip 50.6.0.1 mode manual_up
+set service 138 server-group 1 ip 50.6.0.1 mode manual_up
+set service 139 server-group 1 ip 50.6.0.1 mode manual_up
+set service 140 server-group 1 ip 50.6.0.1 mode manual_up
+set service 141 server-group 1 ip 50.6.0.1 mode manual_up
+set service 142 server-group 1 ip 50.6.0.1 mode manual_up
+set service 143 server-group 1 ip 50.6.0.1 mode manual_up
+set service 144 server-group 1 ip 50.6.0.1 mode manual_up
+set service 145 server-group 1 ip 50.6.0.1 mode manual_up
+set service 146 server-group 1 ip 50.6.0.1 mode manual_up
+set service 147 server-group 1 ip 50.6.0.1 mode manual_up
+set service 148 server-group 1 ip 50.6.0.1 mode manual_up
+set service 149 server-group 1 ip 50.6.0.1 mode manual_up
+set service 150 server-group 1 ip 50.6.0.1 mode manual_up
+set service 151 server-group 1 ip 50.6.0.1 mode manual_up
+set service 152 server-group 1 ip 50.6.0.1 mode manual_up
+set service 153 server-group 1 ip 50.6.0.1 mode manual_up
+set service 154 server-group 1 ip 50.6.0.1 mode manual_up
+set service 155 server-group 1 ip 50.6.0.1 mode manual_up
+set service 156 server-group 1 ip 50.6.0.1 mode manual_up
+set service 157 server-group 1 ip 50.6.0.1 mode manual_up
+set service 158 server-group 1 ip 50.6.0.1 mode manual_up
+set service 159 server-group 1 ip 50.6.0.1 mode manual_up
+set service 160 server-group 1 ip 50.6.0.1 mode manual_up
+set service 161 server-group 1 ip 50.6.0.1 mode manual_up
+set service 162 server-group 1 ip 50.6.0.1 mode manual_up
+set service 163 server-group 1 ip 50.6.0.1 mode manual_up
+set service 164 server-group 1 ip 50.6.0.1 mode manual_up
+set service 165 server-group 1 ip 50.6.0.1 mode manual_up
+set service 166 server-group 1 ip 50.6.0.1 mode manual_up
+set service 167 server-group 1 ip 50.6.0.1 mode manual_up
+set service 168 server-group 1 ip 50.6.0.1 mode manual_up
+set service 169 server-group 1 ip 50.6.0.1 mode manual_up
+set service 170 server-group 1 ip 50.6.0.1 mode manual_up
+set service 171 server-group 1 ip 50.6.0.1 mode manual_up
+set service 172 server-group 1 ip 50.6.0.1 mode manual_up
+set service 173 server-group 1 ip 50.6.0.1 mode manual_up
+set service 174 server-group 1 ip 50.6.0.1 mode manual_up
+set service 175 server-group 1 ip 50.6.0.1 mode manual_up
+set service 176 server-group 1 ip 50.6.0.1 mode manual_up
+set service 177 server-group 1 ip 50.6.0.1 mode manual_up
+set service 178 server-group 1 ip 50.6.0.1 mode manual_up
+set service 179 server-group 1 ip 50.6.0.1 mode manual_up
+set service 180 server-group 1 ip 50.6.0.1 mode manual_up
+set service 181 server-group 1 ip 50.6.0.1 mode manual_up
+set service 182 server-group 1 ip 50.6.0.1 mode manual_up
+set service 183 server-group 1 ip 50.6.0.1 mode manual_up
+set service 184 server-group 1 ip 50.6.0.1 mode manual_up
+set service 185 server-group 1 ip 50.6.0.1 mode manual_up
+set service 186 server-group 1 ip 50.6.0.1 mode manual_up
+set service 187 server-group 1 ip 50.6.0.1 mode manual_up
+set service 188 server-group 1 ip 50.6.0.1 mode manual_up
+set service 189 server-group 1 ip 50.6.0.1 mode manual_up
+set service 190 server-group 1 ip 50.6.0.1 mode manual_up
+set service 191 server-group 1 ip 50.6.0.1 mode manual_up
+set service 192 server-group 1 ip 50.6.0.1 mode manual_up
+set service 193 server-group 1 ip 50.6.0.1 mode manual_up
+set service 194 server-group 1 ip 50.6.0.1 mode manual_up
+set service 195 server-group 1 ip 50.6.0.1 mode manual_up
+set service 196 server-group 1 ip 50.6.0.1 mode manual_up
+set service 197 server-group 1 ip 50.6.0.1 mode manual_up
+set service 198 server-group 1 ip 50.6.0.1 mode manual_up
+set service 199 server-group 1 ip 50.6.0.1 mode manual_up
+set service 200 server-group 1 ip 50.6.0.1 mode manual_up
+set service 201 server-group 1 ip 50.6.0.1 mode manual_up
+set service 202 server-group 1 ip 50.6.0.1 mode manual_up
+set service 203 server-group 1 ip 50.6.0.1 mode manual_up
+set service 204 server-group 1 ip 50.6.0.1 mode manual_up
+set service 205 server-group 1 ip 50.6.0.1 mode manual_up
+set service 206 server-group 1 ip 50.6.0.1 mode manual_up
+set service 207 server-group 1 ip 50.6.0.1 mode manual_up
+set service 208 server-group 1 ip 50.6.0.1 mode manual_up
+set service 209 server-group 1 ip 50.6.0.1 mode manual_up
+set service 210 server-group 1 ip 50.6.0.1 mode manual_up
+set service 211 server-group 1 ip 50.6.0.1 mode manual_up
+set service 212 server-group 1 ip 50.6.0.1 mode manual_up
+set service 213 server-group 1 ip 50.6.0.1 mode manual_up
+set service 214 server-group 1 ip 50.6.0.1 mode manual_up
+set service 215 server-group 1 ip 50.6.0.1 mode manual_up
+set service 216 server-group 1 ip 50.6.0.1 mode manual_up
+set service 217 server-group 1 ip 50.6.0.1 mode manual_up
+set service 218 server-group 1 ip 50.6.0.1 mode manual_up
+set service 219 server-group 1 ip 50.6.0.1 mode manual_up
+set service 220 server-group 1 ip 50.6.0.1 mode manual_up
+set service 221 server-group 1 ip 50.6.0.1 mode manual_up
+set service 222 server-group 1 ip 50.6.0.1 mode manual_up
+set service 223 server-group 1 ip 50.6.0.1 mode manual_up
+set service 224 server-group 1 ip 50.6.0.1 mode manual_up
+set service 225 server-group 1 ip 50.6.0.1 mode manual_up
+set service 226 server-group 1 ip 50.6.0.1 mode manual_up
+set service 227 server-group 1 ip 50.6.0.1 mode manual_up
+set service 228 server-group 1 ip 50.6.0.1 mode manual_up
+set service 229 server-group 1 ip 50.6.0.1 mode manual_up
+set service 230 server-group 1 ip 50.6.0.1 mode manual_up
+set service 231 server-group 1 ip 50.6.0.1 mode manual_up
+set service 232 server-group 1 ip 50.6.0.1 mode manual_up
+set service 233 server-group 1 ip 50.6.0.1 mode manual_up
+set service 234 server-group 1 ip 50.6.0.1 mode manual_up
+set service 235 server-group 1 ip 50.6.0.1 mode manual_up
+set service 236 server-group 1 ip 50.6.0.1 mode manual_up
+set service 237 server-group 1 ip 50.6.0.1 mode manual_up
+set service 238 server-group 1 ip 50.6.0.1 mode manual_up
+set service 239 server-group 1 ip 50.6.0.1 mode manual_up
+set service 240 server-group 1 ip 50.6.0.1 mode manual_up
+set service 241 server-group 1 ip 50.6.0.1 mode manual_up
+set service 242 server-group 1 ip 50.6.0.1 mode manual_up
+set service 243 server-group 1 ip 50.6.0.1 mode manual_up
+set service 244 server-group 1 ip 50.6.0.1 mode manual_up
+set service 245 server-group 1 ip 50.6.0.1 mode manual_up
+set service 246 server-group 1 ip 50.6.0.1 mode manual_up
+set service 247 server-group 1 ip 50.6.0.1 mode manual_up
+set service 248 server-group 1 ip 50.6.0.1 mode manual_up
+set service 249 server-group 1 ip 50.6.0.1 mode manual_up
+set service 250 server-group 1 ip 50.6.0.1 mode manual_up
+set service 251 server-group 1 ip 50.6.0.1 mode manual_up
+set service 252 server-group 1 ip 50.6.0.1 mode manual_up
+set service 253 server-group 1 ip 50.6.0.1 mode manual_up
+set service 254 server-group 1 ip 50.6.0.1 mode manual_up
+
+
+##############脚本下发规则空间
+set service 0   rule-type v4flex min 120375 max 120375
+set service 1   rule-type v4flex min 120375 max 120375
+set service 2   rule-type v4flex min 120375 max 120375
+set service 3   rule-type v4flex min 120375 max 120375
+set service 4   rule-type v4flex min 120375 max 120375
+set service 5   rule-type v4flex min 120375 max 120375
+set service 6   rule-type v4flex min 120375 max 120375
+set service 7   rule-type v4flex min 120375 max 120375
+set service 8   rule-type v4flex min 120375 max 120375
+set service 9   rule-type v4flex min 120375 max 120375
+set service 10  rule-type v4flex min 120375 max 120375
+set service 11  rule-type v4flex min 120375 max 120375
+set service 12  rule-type v4flex min 120375 max 120375
+set service 13  rule-type v4flex min 120375 max 120375
+set service 14  rule-type v4flex min 120375 max 120375
+set service 15  rule-type v4flex min 120375 max 120375
+set service 16  rule-type v4flex min 120375 max 120375
+set service 17  rule-type v4flex min 120375 max 120375
+set service 18  rule-type v4flex min 120375 max 120375
+set service 19  rule-type v4flex min 120375 max 120375
+set service 20  rule-type v4flex min 120375 max 120375
+set service 21  rule-type v4flex min 120375 max 120375
+set service 22  rule-type v4flex min 120375 max 120375
+set service 23  rule-type v4flex min 120375 max 120375
+set service 24  rule-type v4flex min 120375 max 120375
+set service 25  rule-type v4flex min 120375 max 120375
+set service 26  rule-type v4flex min 120375 max 120375
+set service 27  rule-type v4flex min 120375 max 120375
+set service 28  rule-type v4flex min 120375 max 120375
+set service 29  rule-type v4flex min 120375 max 120375
+set service 30  rule-type v4flex min 120375 max 120375
+set service 31  rule-type v4flex min 120375 max 120375
+set service 32  rule-type v4flex min 120375 max 120375
+set service 33  rule-type v4flex min 120375 max 120375
+set service 34  rule-type v4flex min 120375 max 120375
+set service 35  rule-type v4flex min 120375 max 120375
+set service 36  rule-type v4flex min 120375 max 120375
+set service 37  rule-type v4flex min 120375 max 120375
+set service 38  rule-type v4flex min 120375 max 120375
+set service 39  rule-type v4flex min 120375 max 120375
+set service 40  rule-type v4flex min 120375 max 120375
+set service 41  rule-type v4flex min 120375 max 120375
+set service 42  rule-type v4flex min 120375 max 120375
+set service 43  rule-type v4flex min 120375 max 120375
+set service 44  rule-type v4flex min 120375 max 120375
+set service 45  rule-type v4flex min 120375 max 120375
+set service 46  rule-type v4flex min 120375 max 120375
+set service 47  rule-type v4flex min 120375 max 120375
+set service 48  rule-type v4flex min 120375 max 120375
+set service 49  rule-type v4flex min 120375 max 120375
+set service 50  rule-type v4flex min 120375 max 120375
+set service 51  rule-type v4flex min 120375 max 120375
+set service 52  rule-type v4flex min 120375 max 120375
+set service 53  rule-type v4flex min 120375 max 120375
+set service 54  rule-type v4flex min 120375 max 120375
+set service 55  rule-type v4flex min 120375 max 120375
+set service 56  rule-type v4flex min 120375 max 120375
+set service 57  rule-type v4flex min 120375 max 120375
+set service 58  rule-type v4flex min 120375 max 120375
+set service 59  rule-type v4flex min 120375 max 120375
+set service 60  rule-type v4flex min 120375 max 120375
+set service 61  rule-type v4flex min 120375 max 120375
+set service 62  rule-type v4flex min 120375 max 120375
+set service 63  rule-type v4flex min 120375 max 120375
+set service 64  rule-type v4flex min 120375 max 120375
+set service 65  rule-type v4flex min 120375 max 120375
+set service 66  rule-type v4flex min 120375 max 120375
+set service 67  rule-type v4flex min 120375 max 120375
+set service 68  rule-type v4flex min 120375 max 120375
+set service 69  rule-type v4flex min 120375 max 120375
+set service 70  rule-type v4flex min 120375 max 120375
+set service 71  rule-type v4flex min 120375 max 120375
+set service 72  rule-type v4flex min 120375 max 120375
+set service 73  rule-type v4flex min 120375 max 120375
+set service 74  rule-type v4flex min 120375 max 120375
+set service 75  rule-type v4flex min 120375 max 120375
+set service 76  rule-type v4flex min 120375 max 120375
+set service 77  rule-type v4flex min 120375 max 120375
+set service 78  rule-type v4flex min 120375 max 120375
+set service 79  rule-type v4flex min 120375 max 120375
+set service 80  rule-type v4flex min 120375 max 120375
+set service 81  rule-type v4flex min 120375 max 120375
+set service 82  rule-type v4flex min 120375 max 120375
+set service 83  rule-type v4flex min 120375 max 120375
+set service 84  rule-type v4flex min 120375 max 120375
+set service 85  rule-type v4flex min 120375 max 120375
+set service 86  rule-type v4flex min 120375 max 120375
+set service 87  rule-type v4flex min 120375 max 120375
+set service 88  rule-type v4flex min 120375 max 120375
+set service 89  rule-type v4flex min 120375 max 120375
+set service 90  rule-type v4flex min 120375 max 120375
+set service 91  rule-type v4flex min 120375 max 120375
+set service 92  rule-type v4flex min 120375 max 120375
+set service 93  rule-type v4flex min 120375 max 120375
+set service 94  rule-type v4flex min 120375 max 120375
+set service 95  rule-type v4flex min 120375 max 120375
+set service 96  rule-type v4flex min 120375 max 120375
+set service 97  rule-type v4flex min 120375 max 120375
+set service 98  rule-type v4flex min 120375 max 120375
+set service 99  rule-type v4flex min 120375 max 120375
+set service 100 rule-type v4flex min 120375 max 120375
+set service 101 rule-type v4flex min 120375 max 120375
+set service 102 rule-type v4flex min 120375 max 120375
+set service 103 rule-type v4flex min 120375 max 120375
+set service 104 rule-type v4flex min 120375 max 120375
+set service 105 rule-type v4flex min 120375 max 120375
+set service 106 rule-type v4flex min 120375 max 120375
+set service 107 rule-type v4flex min 120375 max 120375
+set service 108 rule-type v4flex min 120375 max 120375
+set service 109 rule-type v4flex min 120375 max 120375
+set service 110 rule-type v4flex min 120375 max 120375
+set service 111 rule-type v4flex min 120375 max 120375
+set service 112 rule-type v4flex min 120375 max 120375
+set service 113 rule-type v4flex min 120375 max 120375
+set service 114 rule-type v4flex min 120375 max 120375
+set service 115 rule-type v4flex min 120375 max 120375
+set service 116 rule-type v4flex min 120375 max 120375
+set service 117 rule-type v4flex min 120375 max 120375
+set service 118 rule-type v4flex min 120375 max 120375
+set service 119 rule-type v4flex min 120375 max 120375
+set service 120 rule-type v4flex min 120375 max 120375
+set service 121 rule-type v4flex min 120375 max 120375
+set service 122 rule-type v4flex min 120375 max 120375
+set service 123 rule-type v4flex min 120375 max 120375
+set service 124 rule-type v4flex min 120375 max 120375
+set service 125 rule-type v4flex min 120375 max 120375
+set service 126 rule-type v4flex min 120375 max 120375
+set service 127 rule-type v4flex min 120375 max 120375
+set service 128 rule-type v4flex min 114000 max 114000
+set service 129 rule-type v4flex min 114000 max 114000
+set service 130 rule-type v4flex min 114000 max 114000
+set service 131 rule-type v4flex min 114000 max 114000
+set service 132 rule-type v4flex min 114000 max 114000
+set service 133 rule-type v4flex min 114000 max 114000
+set service 134 rule-type v4flex min 114000 max 114000
+set service 135 rule-type v4flex min 114000 max 114000
+set service 136 rule-type v4flex min 114000 max 114000
+set service 137 rule-type v4flex min 114000 max 114000
+set service 138 rule-type v4flex min 114000 max 114000
+set service 139 rule-type v4flex min 114000 max 114000
+set service 140 rule-type v4flex min 114000 max 114000
+set service 141 rule-type v4flex min 114000 max 114000
+set service 142 rule-type v4flex min 114000 max 114000
+set service 143 rule-type v4flex min 114000 max 114000
+set service 144 rule-type v4flex min 114000 max 114000
+set service 145 rule-type v4flex min 114000 max 114000
+set service 146 rule-type v4flex min 114000 max 114000
+set service 147 rule-type v4flex min 114000 max 114000
+set service 148 rule-type v4flex min 114000 max 114000
+set service 149 rule-type v4flex min 114000 max 114000
+set service 150 rule-type v4flex min 114000 max 114000
+set service 151 rule-type v4flex min 114000 max 114000
+set service 152 rule-type v4flex min 114000 max 114000
+set service 153 rule-type v4flex min 114000 max 114000
+set service 154 rule-type v4flex min 114000 max 114000
+set service 155 rule-type v4flex min 114000 max 114000
+set service 156 rule-type v4flex min 114000 max 114000
+set service 157 rule-type v4flex min 114000 max 114000
+set service 158 rule-type v4flex min 114000 max 114000
+set service 159 rule-type v4flex min 114000 max 114000
+set service 160 rule-type v4flex min 114000 max 114000
+set service 161 rule-type v4flex min 114000 max 114000
+set service 162 rule-type v4flex min 114000 max 114000
+set service 163 rule-type v4flex min 114000 max 114000
+set service 164 rule-type v4flex min 114000 max 114000
+set service 165 rule-type v4flex min 114000 max 114000
+set service 166 rule-type v4flex min 114000 max 114000
+set service 167 rule-type v4flex min 114000 max 114000
+set service 168 rule-type v4flex min 114000 max 114000
+set service 169 rule-type v4flex min 114000 max 114000
+set service 170 rule-type v4flex min 114000 max 114000
+set service 171 rule-type v4flex min 114000 max 114000
+set service 172 rule-type v4flex min 114000 max 114000
+set service 173 rule-type v4flex min 114000 max 114000
+set service 174 rule-type v4flex min 114000 max 114000
+set service 175 rule-type v4flex min 114000 max 114000
+set service 176 rule-type v4flex min 114000 max 114000
+set service 177 rule-type v4flex min 114000 max 114000
+set service 178 rule-type v4flex min 114000 max 114000
+set service 179 rule-type v4flex min 114000 max 114000
+set service 180 rule-type v4flex min 114000 max 114000
+set service 181 rule-type v4flex min 114000 max 114000
+set service 182 rule-type v4flex min 114000 max 114000
+set service 183 rule-type v4flex min 114000 max 114000
+set service 184 rule-type v4flex min 114000 max 114000
+set service 185 rule-type v4flex min 114000 max 114000
+set service 186 rule-type v4flex min 114000 max 114000
+set service 187 rule-type v4flex min 114000 max 114000
+set service 188 rule-type v4flex min 114000 max 114000
+set service 189 rule-type v4flex min 114000 max 114000
+set service 190 rule-type v4flex min 114000 max 114000
+set service 191 rule-type v4flex min 114000 max 114000
+set service 192 rule-type v4flex min 114000 max 114000
+set service 193 rule-type v4flex min 114000 max 114000
+set service 194 rule-type v4flex min 114000 max 114000
+set service 195 rule-type v4flex min 114000 max 114000
+set service 196 rule-type v4flex min 114000 max 114000
+set service 197 rule-type v4flex min 114000 max 114000
+set service 198 rule-type v4flex min 114000 max 114000
+set service 199 rule-type v4flex min 114000 max 114000
+set service 200 rule-type v4flex min 114000 max 114000
+set service 201 rule-type v4flex min 114000 max 114000
+set service 202 rule-type v4flex min 114000 max 114000
+set service 203 rule-type v4flex min 114000 max 114000
+set service 204 rule-type v4flex min 114000 max 114000
+set service 205 rule-type v4flex min 114000 max 114000
+set service 206 rule-type v4flex min 114000 max 114000
+set service 207 rule-type v4flex min 114000 max 114000
+set service 208 rule-type v4flex min 114000 max 114000
+set service 209 rule-type v4flex min 114000 max 114000
+set service 210 rule-type v4flex min 114000 max 114000
+set service 211 rule-type v4flex min 114000 max 114000
+set service 212 rule-type v4flex min 114000 max 114000
+set service 213 rule-type v4flex min 114000 max 114000
+set service 214 rule-type v4flex min 114000 max 114000
+set service 215 rule-type v4flex min 114000 max 114000
+set service 216 rule-type v4flex min 114000 max 114000
+set service 217 rule-type v4flex min 114000 max 114000
+set service 218 rule-type v4flex min 114000 max 114000
+set service 219 rule-type v4flex min 114000 max 114000
+set service 220 rule-type v4flex min 114000 max 114000
+set service 221 rule-type v4flex min 114000 max 114000
+set service 222 rule-type v4flex min 114000 max 114000
+set service 223 rule-type v4flex min 114000 max 114000
+set service 224 rule-type v4flex min 114000 max 114000
+set service 225 rule-type v4flex min 114000 max 114000
+set service 226 rule-type v4flex min 114000 max 114000
+set service 227 rule-type v4flex min 114000 max 114000
+set service 228 rule-type v4flex min 114000 max 114000
+set service 229 rule-type v4flex min 114000 max 114000
+set service 230 rule-type v4flex min 114000 max 114000
+set service 231 rule-type v4flex min 114000 max 114000
+set service 232 rule-type v4flex min 114000 max 114000
+set service 233 rule-type v4flex min 114000 max 114000
+set service 234 rule-type v4flex min 114000 max 114000
+set service 235 rule-type v4flex min 114000 max 114000
+set service 236 rule-type v4flex min 114000 max 114000
+set service 237 rule-type v4flex min 114000 max 114000
+set service 238 rule-type v4flex min 114000 max 114000
+set service 239 rule-type v4flex min 114000 max 114000
+set service 240 rule-type v4flex min 114000 max 114000
+set service 241 rule-type v4flex min 114000 max 114000
+set service 242 rule-type v4flex min 114000 max 114000
+set service 243 rule-type v4flex min 114000 max 114000
+set service 244 rule-type v4flex min 114000 max 114000
+set service 245 rule-type v4flex min 114000 max 114000
+set service 246 rule-type v4flex min 114000 max 114000
+set service 247 rule-type v4flex min 114000 max 114000
+set service 248 rule-type v4flex min 114000 max 114000
+set service 249 rule-type v4flex min 114000 max 114000
+set service 250 rule-type v4flex min 114000 max 114000
+set service 251 rule-type v4flex min 114000 max 114000
+set service 252 rule-type v4flex min 114000 max 114000
+set service 253 rule-type v4flex min 114000 max 114000
+set service 254 rule-type v4flex min 228000 max 228000
+set service 0   rule-type v6flex min 280875 max 280875
+set service 1   rule-type v6flex min 280875 max 280875
+set service 2   rule-type v6flex min 280875 max 280875
+set service 3   rule-type v6flex min 280875 max 280875
+set service 4   rule-type v6flex min 280875 max 280875
+set service 5   rule-type v6flex min 280875 max 280875
+set service 6   rule-type v6flex min 280875 max 280875
+set service 7   rule-type v6flex min 280875 max 280875
+set service 8   rule-type v6flex min 280875 max 280875
+set service 9   rule-type v6flex min 280875 max 280875
+set service 10  rule-type v6flex min 280875 max 280875
+set service 11  rule-type v6flex min 280875 max 280875
+set service 12  rule-type v6flex min 280875 max 280875
+set service 13  rule-type v6flex min 280875 max 280875
+set service 14  rule-type v6flex min 280875 max 280875
+set service 15  rule-type v6flex min 280875 max 280875
+set service 16  rule-type v6flex min 280875 max 280875
+set service 17  rule-type v6flex min 280875 max 280875
+set service 18  rule-type v6flex min 280875 max 280875
+set service 19  rule-type v6flex min 280875 max 280875
+set service 20  rule-type v6flex min 280875 max 280875
+set service 21  rule-type v6flex min 280875 max 280875
+set service 22  rule-type v6flex min 280875 max 280875
+set service 23  rule-type v6flex min 280875 max 280875
+set service 24  rule-type v6flex min 280875 max 280875
+set service 25  rule-type v6flex min 280875 max 280875
+set service 26  rule-type v6flex min 280875 max 280875
+set service 27  rule-type v6flex min 280875 max 280875
+set service 28  rule-type v6flex min 280875 max 280875
+set service 29  rule-type v6flex min 280875 max 280875
+set service 30  rule-type v6flex min 280875 max 280875
+set service 31  rule-type v6flex min 280875 max 280875
+set service 32  rule-type v6flex min 295750 max 295750
+set service 33  rule-type v6flex min 295750 max 295750
+set service 34  rule-type v6flex min 295750 max 295750
+set service 35  rule-type v6flex min 295750 max 295750
+set service 36  rule-type v6flex min 295750 max 295750
+set service 37  rule-type v6flex min 295750 max 295750
+set service 38  rule-type v6flex min 295750 max 295750
+set service 39  rule-type v6flex min 295750 max 295750
+set service 40  rule-type v6flex min 295750 max 295750
+set service 41  rule-type v6flex min 295750 max 295750
+set service 42  rule-type v6flex min 295750 max 295750
+set service 43  rule-type v6flex min 295750 max 295750
+set service 44  rule-type v6flex min 295750 max 295750
+set service 45  rule-type v6flex min 295750 max 295750
+set service 46  rule-type v6flex min 295750 max 295750
+set service 47  rule-type v6flex min 295750 max 295750
+set service 48  rule-type v6flex min 295750 max 295750
+set service 49  rule-type v6flex min 295750 max 295750
+set service 50  rule-type v6flex min 295750 max 295750
+set service 51  rule-type v6flex min 295750 max 295750
+set service 52  rule-type v6flex min 295750 max 295750
+set service 53  rule-type v6flex min 295750 max 295750
+set service 54  rule-type v6flex min 295750 max 295750
+set service 55  rule-type v6flex min 295750 max 295750
+set service 56  rule-type v6flex min 295750 max 295750
+set service 57  rule-type v6flex min 295750 max 295750
+set service 58  rule-type v6flex min 295750 max 295750
+set service 59  rule-type v6flex min 295750 max 295750
+set service 60  rule-type v6flex min 295750 max 295750
+set service 61  rule-type v6flex min 295750 max 295750
+set service 62  rule-type v6flex min 295750 max 295750
+set service 63  rule-type v6flex min 295750 max 295750
+set service 64  rule-type v6flex min 294875 max 294875
+set service 65  rule-type v6flex min 294875 max 294875
+set service 66  rule-type v6flex min 294875 max 294875
+set service 67  rule-type v6flex min 294875 max 294875
+set service 68  rule-type v6flex min 294875 max 294875
+set service 69  rule-type v6flex min 294875 max 294875
+set service 70  rule-type v6flex min 294875 max 294875
+set service 71  rule-type v6flex min 294875 max 294875
+set service 72  rule-type v6flex min 294875 max 294875
+set service 73  rule-type v6flex min 294875 max 294875
+set service 74  rule-type v6flex min 294875 max 294875
+set service 75  rule-type v6flex min 294875 max 294875
+set service 76  rule-type v6flex min 294875 max 294875
+set service 77  rule-type v6flex min 294875 max 294875
+set service 78  rule-type v6flex min 294875 max 294875
+set service 79  rule-type v6flex min 294875 max 294875
+set service 80  rule-type v6flex min 294875 max 294875
+set service 81  rule-type v6flex min 294875 max 294875
+set service 82  rule-type v6flex min 294875 max 294875
+set service 83  rule-type v6flex min 294875 max 294875
+set service 84  rule-type v6flex min 294875 max 294875
+set service 85  rule-type v6flex min 294875 max 294875
+set service 86  rule-type v6flex min 294875 max 294875
+set service 87  rule-type v6flex min 294875 max 294875
+set service 88  rule-type v6flex min 294875 max 294875
+set service 89  rule-type v6flex min 294875 max 294875
+set service 90  rule-type v6flex min 294875 max 294875
+set service 91  rule-type v6flex min 294875 max 294875
+set service 92  rule-type v6flex min 294875 max 294875
+set service 93  rule-type v6flex min 294875 max 294875
+set service 94  rule-type v6flex min 294875 max 294875
+set service 95  rule-type v6flex min 294875 max 294875
+set service 96  rule-type v6flex min 280000 max 280000
+set service 97  rule-type v6flex min 280000 max 280000
+set service 98  rule-type v6flex min 280000 max 280000
+set service 99  rule-type v6flex min 280000 max 280000
+set service 100 rule-type v6flex min 280000 max 280000
+set service 101 rule-type v6flex min 280000 max 280000
+set service 102 rule-type v6flex min 280000 max 280000
+set service 103 rule-type v6flex min 280000 max 280000
+set service 104 rule-type v6flex min 280000 max 280000
+set service 105 rule-type v6flex min 280000 max 280000
+set service 106 rule-type v6flex min 280000 max 280000
+set service 107 rule-type v6flex min 280000 max 280000
+set service 108 rule-type v6flex min 280000 max 280000
+set service 109 rule-type v6flex min 280000 max 280000
+set service 110 rule-type v6flex min 280000 max 280000
+set service 111 rule-type v6flex min 280000 max 280000
+set service 112 rule-type v6flex min 280000 max 280000
+set service 113 rule-type v6flex min 280000 max 280000
+set service 114 rule-type v6flex min 280000 max 280000
+set service 115 rule-type v6flex min 280000 max 280000
+set service 116 rule-type v6flex min 280000 max 280000
+set service 117 rule-type v6flex min 280000 max 280000
+set service 118 rule-type v6flex min 280000 max 280000
+set service 119 rule-type v6flex min 280000 max 280000
+set service 120 rule-type v6flex min 280000 max 280000
+set service 121 rule-type v6flex min 280000 max 280000
+set service 122 rule-type v6flex min 280000 max 280000
+set service 123 rule-type v6flex min 280000 max 280000
+set service 124 rule-type v6flex min 280000 max 280000
+set service 125 rule-type v6flex min 280000 max 280000
+set service 126 rule-type v6flex min 280000 max 280000
+set service 127 rule-type v6flex min 280000 max 280000
+set service 128 rule-type v6flex min 266000 max 266000
+set service 129 rule-type v6flex min 266000 max 266000
+set service 130 rule-type v6flex min 266000 max 266000
+set service 131 rule-type v6flex min 266000 max 266000
+set service 132 rule-type v6flex min 266000 max 266000
+set service 133 rule-type v6flex min 266000 max 266000
+set service 134 rule-type v6flex min 266000 max 266000
+set service 135 rule-type v6flex min 266000 max 266000
+set service 136 rule-type v6flex min 266000 max 266000
+set service 137 rule-type v6flex min 266000 max 266000
+set service 138 rule-type v6flex min 266000 max 266000
+set service 139 rule-type v6flex min 266000 max 266000
+set service 140 rule-type v6flex min 266000 max 266000
+set service 141 rule-type v6flex min 266000 max 266000
+set service 142 rule-type v6flex min 266000 max 266000
+set service 143 rule-type v6flex min 266000 max 266000
+set service 144 rule-type v6flex min 266000 max 266000
+set service 145 rule-type v6flex min 266000 max 266000
+set service 146 rule-type v6flex min 266000 max 266000
+set service 147 rule-type v6flex min 266000 max 266000
+set service 148 rule-type v6flex min 266000 max 266000
+set service 149 rule-type v6flex min 266000 max 266000
+set service 150 rule-type v6flex min 266000 max 266000
+set service 151 rule-type v6flex min 266000 max 266000
+set service 152 rule-type v6flex min 266000 max 266000
+set service 153 rule-type v6flex min 266000 max 266000
+set service 154 rule-type v6flex min 266000 max 266000
+set service 155 rule-type v6flex min 266000 max 266000
+set service 156 rule-type v6flex min 266000 max 266000
+set service 157 rule-type v6flex min 266000 max 266000
+set service 158 rule-type v6flex min 266000 max 266000
+set service 159 rule-type v6flex min 266000 max 266000
+set service 160 rule-type v6flex min 266000 max 266000
+set service 161 rule-type v6flex min 266000 max 266000
+set service 162 rule-type v6flex min 266000 max 266000
+set service 163 rule-type v6flex min 266000 max 266000
+set service 164 rule-type v6flex min 266000 max 266000
+set service 165 rule-type v6flex min 266000 max 266000
+set service 166 rule-type v6flex min 266000 max 266000
+set service 167 rule-type v6flex min 266000 max 266000
+set service 168 rule-type v6flex min 266000 max 266000
+set service 169 rule-type v6flex min 266000 max 266000
+set service 170 rule-type v6flex min 266000 max 266000
+set service 171 rule-type v6flex min 266000 max 266000
+set service 172 rule-type v6flex min 266000 max 266000
+set service 173 rule-type v6flex min 266000 max 266000
+set service 174 rule-type v6flex min 266000 max 266000
+set service 175 rule-type v6flex min 266000 max 266000
+set service 176 rule-type v6flex min 266000 max 266000
+set service 177 rule-type v6flex min 266000 max 266000
+set service 178 rule-type v6flex min 266000 max 266000
+set service 179 rule-type v6flex min 266000 max 266000
+set service 180 rule-type v6flex min 266000 max 266000
+set service 181 rule-type v6flex min 266000 max 266000
+set service 182 rule-type v6flex min 266000 max 266000
+set service 183 rule-type v6flex min 266000 max 266000
+set service 184 rule-type v6flex min 266000 max 266000
+set service 185 rule-type v6flex min 266000 max 266000
+set service 186 rule-type v6flex min 266000 max 266000
+set service 187 rule-type v6flex min 266000 max 266000
+set service 188 rule-type v6flex min 266000 max 266000
+set service 189 rule-type v6flex min 266000 max 266000
+set service 190 rule-type v6flex min 266000 max 266000
+set service 191 rule-type v6flex min 266000 max 266000
+set service 192 rule-type v6flex min 252000 max 252000
+set service 193 rule-type v6flex min 252000 max 252000
+set service 194 rule-type v6flex min 252000 max 252000
+set service 195 rule-type v6flex min 252000 max 252000
+set service 196 rule-type v6flex min 252000 max 252000
+set service 197 rule-type v6flex min 252000 max 252000
+set service 198 rule-type v6flex min 252000 max 252000
+set service 199 rule-type v6flex min 252000 max 252000
+set service 200 rule-type v6flex min 252000 max 252000
+set service 201 rule-type v6flex min 252000 max 252000
+set service 202 rule-type v6flex min 252000 max 252000
+set service 203 rule-type v6flex min 252000 max 252000
+set service 204 rule-type v6flex min 252000 max 252000
+set service 205 rule-type v6flex min 252000 max 252000
+set service 206 rule-type v6flex min 252000 max 252000
+set service 207 rule-type v6flex min 252000 max 252000
+set service 208 rule-type v6flex min 252000 max 252000
+set service 209 rule-type v6flex min 252000 max 252000
+set service 210 rule-type v6flex min 252000 max 252000
+set service 211 rule-type v6flex min 252000 max 252000
+set service 212 rule-type v6flex min 252000 max 252000
+set service 213 rule-type v6flex min 252000 max 252000
+set service 214 rule-type v6flex min 252000 max 252000
+set service 215 rule-type v6flex min 252000 max 252000
+set service 216 rule-type v6flex min 252000 max 252000
+set service 217 rule-type v6flex min 252000 max 252000
+set service 218 rule-type v6flex min 252000 max 252000
+set service 219 rule-type v6flex min 252000 max 252000
+set service 220 rule-type v6flex min 252000 max 252000
+set service 221 rule-type v6flex min 252000 max 252000
+set service 222 rule-type v6flex min 252000 max 252000
+set service 223 rule-type v6flex min 252000 max 252000
+set service 224 rule-type v6flex min 252000 max 252000
+set service 225 rule-type v6flex min 252000 max 252000
+set service 226 rule-type v6flex min 252000 max 252000
+set service 227 rule-type v6flex min 252000 max 252000
+set service 228 rule-type v6flex min 252000 max 252000
+set service 229 rule-type v6flex min 252000 max 252000
+set service 230 rule-type v6flex min 252000 max 252000
+set service 231 rule-type v6flex min 252000 max 252000
+set service 232 rule-type v6flex min 252000 max 252000
+set service 233 rule-type v6flex min 252000 max 252000
+set service 234 rule-type v6flex min 252000 max 252000
+set service 235 rule-type v6flex min 252000 max 252000
+set service 236 rule-type v6flex min 252000 max 252000
+set service 237 rule-type v6flex min 252000 max 252000
+set service 238 rule-type v6flex min 252000 max 252000
+set service 239 rule-type v6flex min 252000 max 252000
+set service 240 rule-type v6flex min 252000 max 252000
+set service 241 rule-type v6flex min 252000 max 252000
+set service 242 rule-type v6flex min 252000 max 252000
+set service 243 rule-type v6flex min 252000 max 252000
+set service 244 rule-type v6flex min 252000 max 252000
+set service 245 rule-type v6flex min 252000 max 252000
+set service 246 rule-type v6flex min 252000 max 252000
+set service 247 rule-type v6flex min 252000 max 252000
+set service 248 rule-type v6flex min 252000 max 252000
+set service 249 rule-type v6flex min 252000 max 252000
+set service 250 rule-type v6flex min 252000 max 252000
+set service 251 rule-type v6flex min 252000 max 252000
+set service 252 rule-type v6flex min 252000 max 252000
+set service 253 rule-type v6flex min 252000 max 252000
+set service 254 rule-type v6flex min 504000 max 504000
+
+set service 0   rule-type v4mask min 1525 max 1525
+set service 1   rule-type v4mask min 1125 max 1125
+set service 2   rule-type v4mask min 1125 max 1125
+set service 3   rule-type v4mask min 1125 max 1125
+set service 4   rule-type v4mask min 1125 max 1125
+set service 5   rule-type v4mask min 1125 max 1125
+set service 6   rule-type v4mask min 1125 max 1125
+set service 7   rule-type v4mask min 1125 max 1125
+set service 8   rule-type v4mask min 1125 max 1125
+set service 9   rule-type v4mask min 1125 max 1125
+set service 10  rule-type v4mask min 1125 max 1125
+set service 11  rule-type v4mask min 1125 max 1125
+set service 12  rule-type v4mask min 1125 max 1125
+set service 13  rule-type v4mask min 1125 max 1125
+set service 14  rule-type v4mask min 1125 max 1125
+set service 15  rule-type v4mask min 1125 max 1125
+set service 16  rule-type v4mask min 1125 max 1125
+set service 17  rule-type v4mask min 1125 max 1125
+set service 18  rule-type v4mask min 1125 max 1125
+set service 19  rule-type v4mask min 1125 max 1125
+set service 20  rule-type v4mask min 1125 max 1125
+set service 21  rule-type v4mask min 1125 max 1125
+set service 22  rule-type v4mask min 1125 max 1125
+set service 23  rule-type v4mask min 1125 max 1125
+set service 24  rule-type v4mask min 1125 max 1125
+set service 25  rule-type v4mask min 1125 max 1125
+set service 26  rule-type v4mask min 1125 max 1125
+set service 27  rule-type v4mask min 1125 max 1125
+set service 28  rule-type v4mask min 1125 max 1125
+set service 29  rule-type v4mask min 1125 max 1125
+set service 30  rule-type v4mask min 1125 max 1125
+set service 31  rule-type v4mask min 1125 max 1125
+set service 32  rule-type v4mask min 1125 max 1125
+set service 33  rule-type v4mask min 1125 max 1125
+set service 34  rule-type v4mask min 1125 max 1125
+set service 35  rule-type v4mask min 1125 max 1125
+set service 36  rule-type v4mask min 1125 max 1125
+set service 37  rule-type v4mask min 1125 max 1125
+set service 38  rule-type v4mask min 1125 max 1125
+set service 39  rule-type v4mask min 1125 max 1125
+set service 40  rule-type v4mask min 1125 max 1125
+set service 41  rule-type v4mask min 1125 max 1125
+set service 42  rule-type v4mask min 1125 max 1125
+set service 43  rule-type v4mask min 1125 max 1125
+set service 44  rule-type v4mask min 1125 max 1125
+set service 45  rule-type v4mask min 1125 max 1125
+set service 46  rule-type v4mask min 1125 max 1125
+set service 47  rule-type v4mask min 1125 max 1125
+set service 48  rule-type v4mask min 1125 max 1125
+set service 49  rule-type v4mask min 1125 max 1125
+set service 50  rule-type v4mask min 1125 max 1125
+set service 51  rule-type v4mask min 1125 max 1125
+set service 52  rule-type v4mask min 1125 max 1125
+set service 53  rule-type v4mask min 1125 max 1125
+set service 54  rule-type v4mask min 1125 max 1125
+set service 55  rule-type v4mask min 1125 max 1125
+set service 56  rule-type v4mask min 1125 max 1125
+set service 57  rule-type v4mask min 1125 max 1125
+set service 58  rule-type v4mask min 1125 max 1125
+set service 59  rule-type v4mask min 1125 max 1125
+set service 60  rule-type v4mask min 1125 max 1125
+set service 61  rule-type v4mask min 1125 max 1125
+set service 62  rule-type v4mask min 1125 max 1125
+set service 63  rule-type v4mask min 1125 max 1125
+set service 64  rule-type v4mask min 925 max 925
+set service 65  rule-type v4mask min 925 max 925
+set service 66  rule-type v4mask min 925 max 925
+set service 67  rule-type v4mask min 925 max 925
+set service 68  rule-type v4mask min 925 max 925
+set service 69  rule-type v4mask min 925 max 925
+set service 70  rule-type v4mask min 925 max 925
+set service 71  rule-type v4mask min 925 max 925
+set service 72  rule-type v4mask min 925 max 925
+set service 73  rule-type v4mask min 925 max 925
+set service 74  rule-type v4mask min 925 max 925
+set service 75  rule-type v4mask min 925 max 925
+set service 76  rule-type v4mask min 925 max 925
+set service 77  rule-type v4mask min 925 max 925
+set service 78  rule-type v4mask min 925 max 925
+set service 79  rule-type v4mask min 925 max 925
+set service 80  rule-type v4mask min 925 max 925
+set service 81  rule-type v4mask min 925 max 925
+set service 82  rule-type v4mask min 925 max 925
+set service 83  rule-type v4mask min 925 max 925
+set service 84  rule-type v4mask min 925 max 925
+set service 85  rule-type v4mask min 925 max 925
+set service 86  rule-type v4mask min 925 max 925
+set service 87  rule-type v4mask min 925 max 925
+set service 88  rule-type v4mask min 925 max 925
+set service 89  rule-type v4mask min 925 max 925
+set service 90  rule-type v4mask min 925 max 925
+set service 91  rule-type v4mask min 925 max 925
+set service 92  rule-type v4mask min 925 max 925
+set service 93  rule-type v4mask min 925 max 925
+set service 94  rule-type v4mask min 925 max 925
+set service 95  rule-type v4mask min 925 max 925
+set service 96  rule-type v4mask min 925 max 925
+set service 97  rule-type v4mask min 925 max 925
+set service 98  rule-type v4mask min 925 max 925
+set service 99  rule-type v4mask min 925 max 925
+set service 100 rule-type v4mask min 925 max 925
+set service 101 rule-type v4mask min 925 max 925
+set service 102 rule-type v4mask min 925 max 925
+set service 103 rule-type v4mask min 925 max 925
+set service 104 rule-type v4mask min 925 max 925
+set service 105 rule-type v4mask min 925 max 925
+set service 106 rule-type v4mask min 925 max 925
+set service 107 rule-type v4mask min 925 max 925
+set service 108 rule-type v4mask min 925 max 925
+set service 109 rule-type v4mask min 925 max 925
+set service 110 rule-type v4mask min 925 max 925
+set service 111 rule-type v4mask min 925 max 925
+set service 112 rule-type v4mask min 925 max 925
+set service 113 rule-type v4mask min 925 max 925
+set service 114 rule-type v4mask min 925 max 925
+set service 115 rule-type v4mask min 925 max 925
+set service 116 rule-type v4mask min 925 max 925
+set service 117 rule-type v4mask min 925 max 925
+set service 118 rule-type v4mask min 925 max 925
+set service 119 rule-type v4mask min 925 max 925
+set service 120 rule-type v4mask min 925 max 925
+set service 121 rule-type v4mask min 925 max 925
+set service 122 rule-type v4mask min 925 max 925
+set service 123 rule-type v4mask min 925 max 925
+set service 124 rule-type v4mask min 925 max 925
+set service 125 rule-type v4mask min 925 max 925
+set service 126 rule-type v4mask min 925 max 925
+set service 127 rule-type v4mask min 925 max 925
+set service 128 rule-type v4mask min 925 max 925
+set service 129 rule-type v4mask min 925 max 925
+set service 130 rule-type v4mask min 925 max 925
+set service 131 rule-type v4mask min 925 max 925
+set service 132 rule-type v4mask min 925 max 925
+set service 133 rule-type v4mask min 925 max 925
+set service 134 rule-type v4mask min 925 max 925
+set service 135 rule-type v4mask min 925 max 925
+set service 136 rule-type v4mask min 925 max 925
+set service 137 rule-type v4mask min 925 max 925
+set service 138 rule-type v4mask min 925 max 925
+set service 139 rule-type v4mask min 925 max 925
+set service 140 rule-type v4mask min 925 max 925
+set service 141 rule-type v4mask min 925 max 925
+set service 142 rule-type v4mask min 925 max 925
+set service 143 rule-type v4mask min 925 max 925
+set service 144 rule-type v4mask min 925 max 925
+set service 145 rule-type v4mask min 925 max 925
+set service 146 rule-type v4mask min 925 max 925
+set service 147 rule-type v4mask min 925 max 925
+set service 148 rule-type v4mask min 925 max 925
+set service 149 rule-type v4mask min 925 max 925
+set service 150 rule-type v4mask min 925 max 925
+set service 151 rule-type v4mask min 925 max 925
+set service 152 rule-type v4mask min 925 max 925
+set service 153 rule-type v4mask min 925 max 925
+set service 154 rule-type v4mask min 925 max 925
+set service 155 rule-type v4mask min 925 max 925
+set service 156 rule-type v4mask min 925 max 925
+set service 157 rule-type v4mask min 925 max 925
+set service 158 rule-type v4mask min 925 max 925
+set service 159 rule-type v4mask min 925 max 925
+set service 160 rule-type v4mask min 925 max 925
+set service 161 rule-type v4mask min 925 max 925
+set service 162 rule-type v4mask min 925 max 925
+set service 163 rule-type v4mask min 925 max 925
+set service 164 rule-type v4mask min 925 max 925
+set service 165 rule-type v4mask min 925 max 925
+set service 166 rule-type v4mask min 925 max 925
+set service 167 rule-type v4mask min 925 max 925
+set service 168 rule-type v4mask min 925 max 925
+set service 169 rule-type v4mask min 925 max 925
+set service 170 rule-type v4mask min 925 max 925
+set service 171 rule-type v4mask min 925 max 925
+set service 172 rule-type v4mask min 925 max 925
+set service 173 rule-type v4mask min 925 max 925
+set service 174 rule-type v4mask min 925 max 925
+set service 175 rule-type v4mask min 925 max 925
+set service 176 rule-type v4mask min 925 max 925
+set service 177 rule-type v4mask min 925 max 925
+set service 178 rule-type v4mask min 925 max 925
+set service 179 rule-type v4mask min 925 max 925
+set service 180 rule-type v4mask min 925 max 925
+set service 181 rule-type v4mask min 925 max 925
+set service 182 rule-type v4mask min 925 max 925
+set service 183 rule-type v4mask min 925 max 925
+set service 184 rule-type v4mask min 925 max 925
+set service 185 rule-type v4mask min 925 max 925
+set service 186 rule-type v4mask min 925 max 925
+set service 187 rule-type v4mask min 925 max 925
+set service 188 rule-type v4mask min 925 max 925
+set service 189 rule-type v4mask min 925 max 925
+set service 190 rule-type v4mask min 925 max 925
+set service 191 rule-type v4mask min 925 max 925
+set service 192 rule-type v4mask min 925 max 925
+set service 193 rule-type v4mask min 925 max 925
+set service 194 rule-type v4mask min 925 max 925
+set service 195 rule-type v4mask min 925 max 925
+set service 196 rule-type v4mask min 925 max 925
+set service 197 rule-type v4mask min 925 max 925
+set service 198 rule-type v4mask min 925 max 925
+set service 199 rule-type v4mask min 925 max 925
+set service 200 rule-type v4mask min 925 max 925
+set service 201 rule-type v4mask min 925 max 925
+set service 202 rule-type v4mask min 925 max 925
+set service 203 rule-type v4mask min 925 max 925
+set service 204 rule-type v4mask min 925 max 925
+set service 205 rule-type v4mask min 925 max 925
+set service 206 rule-type v4mask min 925 max 925
+set service 207 rule-type v4mask min 925 max 925
+set service 208 rule-type v4mask min 925 max 925
+set service 209 rule-type v4mask min 925 max 925
+set service 210 rule-type v4mask min 925 max 925
+set service 211 rule-type v4mask min 925 max 925
+set service 212 rule-type v4mask min 925 max 925
+set service 213 rule-type v4mask min 925 max 925
+set service 214 rule-type v4mask min 925 max 925
+set service 215 rule-type v4mask min 925 max 925
+set service 216 rule-type v4mask min 925 max 925
+set service 217 rule-type v4mask min 925 max 925
+set service 218 rule-type v4mask min 925 max 925
+set service 219 rule-type v4mask min 925 max 925
+set service 220 rule-type v4mask min 925 max 925
+set service 221 rule-type v4mask min 925 max 925
+set service 222 rule-type v4mask min 925 max 925
+set service 223 rule-type v4mask min 925 max 925
+set service 224 rule-type v4mask min 925 max 925
+set service 225 rule-type v4mask min 925 max 925
+set service 226 rule-type v4mask min 925 max 925
+set service 227 rule-type v4mask min 925 max 925
+set service 228 rule-type v4mask min 925 max 925
+set service 229 rule-type v4mask min 925 max 925
+set service 230 rule-type v4mask min 925 max 925
+set service 231 rule-type v4mask min 925 max 925
+set service 232 rule-type v4mask min 925 max 925
+set service 233 rule-type v4mask min 925 max 925
+set service 234 rule-type v4mask min 925 max 925
+set service 235 rule-type v4mask min 925 max 925
+set service 236 rule-type v4mask min 925 max 925
+set service 237 rule-type v4mask min 925 max 925
+set service 238 rule-type v4mask min 925 max 925
+set service 239 rule-type v4mask min 925 max 925
+set service 240 rule-type v4mask min 925 max 925
+set service 241 rule-type v4mask min 925 max 925
+set service 242 rule-type v4mask min 925 max 925
+set service 243 rule-type v4mask min 925 max 925
+set service 244 rule-type v4mask min 925 max 925
+set service 245 rule-type v4mask min 925 max 925
+set service 246 rule-type v4mask min 925 max 925
+set service 247 rule-type v4mask min 925 max 925
+set service 248 rule-type v4mask min 925 max 925
+set service 249 rule-type v4mask min 925 max 925
+set service 250 rule-type v4mask min 925 max 925
+set service 251 rule-type v4mask min 925 max 925
+set service 252 rule-type v4mask min 925 max 925
+set service 253 rule-type v4mask min 925 max 925
+set service 254 rule-type v4mask min 1850 max 1850
+
+set service 0   rule-type v6mask min 675 max 675
+set service 1   rule-type v6mask min 675 max 675
+set service 2   rule-type v6mask min 675 max 675
+set service 3   rule-type v6mask min 675 max 675
+set service 4   rule-type v6mask min 675 max 675
+set service 5   rule-type v6mask min 675 max 675
+set service 6   rule-type v6mask min 675 max 675
+set service 7   rule-type v6mask min 675 max 675
+set service 8   rule-type v6mask min 675 max 675
+set service 9   rule-type v6mask min 675 max 675
+set service 10  rule-type v6mask min 675 max 675
+set service 11  rule-type v6mask min 675 max 675
+set service 12  rule-type v6mask min 675 max 675
+set service 13  rule-type v6mask min 675 max 675
+set service 14  rule-type v6mask min 675 max 675
+set service 15  rule-type v6mask min 675 max 675
+set service 16  rule-type v6mask min 675 max 675
+set service 17  rule-type v6mask min 675 max 675
+set service 18  rule-type v6mask min 675 max 675
+set service 19  rule-type v6mask min 675 max 675
+set service 20  rule-type v6mask min 675 max 675
+set service 21  rule-type v6mask min 675 max 675
+set service 22  rule-type v6mask min 675 max 675
+set service 23  rule-type v6mask min 675 max 675
+set service 24  rule-type v6mask min 675 max 675
+set service 25  rule-type v6mask min 675 max 675
+set service 26  rule-type v6mask min 675 max 675
+set service 27  rule-type v6mask min 675 max 675
+set service 28  rule-type v6mask min 675 max 675
+set service 29  rule-type v6mask min 675 max 675
+set service 30  rule-type v6mask min 675 max 675
+set service 31  rule-type v6mask min 675 max 675
+set service 32  rule-type v6mask min 350 max 350
+set service 33  rule-type v6mask min 350 max 350
+set service 34  rule-type v6mask min 350 max 350
+set service 35  rule-type v6mask min 350 max 350
+set service 36  rule-type v6mask min 350 max 350
+set service 37  rule-type v6mask min 350 max 350
+set service 38  rule-type v6mask min 350 max 350
+set service 39  rule-type v6mask min 350 max 350
+set service 40  rule-type v6mask min 350 max 350
+set service 41  rule-type v6mask min 350 max 350
+set service 42  rule-type v6mask min 350 max 350
+set service 43  rule-type v6mask min 350 max 350
+set service 44  rule-type v6mask min 350 max 350
+set service 45  rule-type v6mask min 350 max 350
+set service 46  rule-type v6mask min 350 max 350
+set service 47  rule-type v6mask min 350 max 350
+set service 48  rule-type v6mask min 350 max 350
+set service 49  rule-type v6mask min 350 max 350
+set service 50  rule-type v6mask min 350 max 350
+set service 51  rule-type v6mask min 350 max 350
+set service 52  rule-type v6mask min 350 max 350
+set service 53  rule-type v6mask min 350 max 350
+set service 54  rule-type v6mask min 350 max 350
+set service 55  rule-type v6mask min 350 max 350
+set service 56  rule-type v6mask min 350 max 350
+set service 57  rule-type v6mask min 350 max 350
+set service 58  rule-type v6mask min 350 max 350
+set service 59  rule-type v6mask min 350 max 350
+set service 60  rule-type v6mask min 350 max 350
+set service 61  rule-type v6mask min 350 max 350
+set service 62  rule-type v6mask min 350 max 350
+set service 63  rule-type v6mask min 350 max 350
+set service 64  rule-type v6mask min 350 max 350
+set service 65  rule-type v6mask min 350 max 350
+set service 66  rule-type v6mask min 350 max 350
+set service 67  rule-type v6mask min 350 max 350
+set service 68  rule-type v6mask min 350 max 350
+set service 69  rule-type v6mask min 350 max 350
+set service 70  rule-type v6mask min 350 max 350
+set service 71  rule-type v6mask min 350 max 350
+set service 72  rule-type v6mask min 350 max 350
+set service 73  rule-type v6mask min 350 max 350
+set service 74  rule-type v6mask min 350 max 350
+set service 75  rule-type v6mask min 350 max 350
+set service 76  rule-type v6mask min 350 max 350
+set service 77  rule-type v6mask min 350 max 350
+set service 78  rule-type v6mask min 350 max 350
+set service 79  rule-type v6mask min 350 max 350
+set service 80  rule-type v6mask min 350 max 350
+set service 81  rule-type v6mask min 350 max 350
+set service 82  rule-type v6mask min 350 max 350
+set service 83  rule-type v6mask min 350 max 350
+set service 84  rule-type v6mask min 350 max 350
+set service 85  rule-type v6mask min 350 max 350
+set service 86  rule-type v6mask min 350 max 350
+set service 87  rule-type v6mask min 350 max 350
+set service 88  rule-type v6mask min 350 max 350
+set service 89  rule-type v6mask min 350 max 350
+set service 90  rule-type v6mask min 350 max 350
+set service 91  rule-type v6mask min 350 max 350
+set service 92  rule-type v6mask min 350 max 350
+set service 93  rule-type v6mask min 350 max 350
+set service 94  rule-type v6mask min 350 max 350
+set service 95  rule-type v6mask min 350 max 350
+set service 96  rule-type v6mask min 350 max 350
+set service 97  rule-type v6mask min 350 max 350
+set service 98  rule-type v6mask min 350 max 350
+set service 99  rule-type v6mask min 350 max 350
+set service 100 rule-type v6mask min 350 max 350
+set service 101 rule-type v6mask min 350 max 350
+set service 102 rule-type v6mask min 350 max 350
+set service 103 rule-type v6mask min 350 max 350
+set service 104 rule-type v6mask min 350 max 350
+set service 105 rule-type v6mask min 350 max 350
+set service 106 rule-type v6mask min 350 max 350
+set service 107 rule-type v6mask min 350 max 350
+set service 108 rule-type v6mask min 350 max 350
+set service 109 rule-type v6mask min 350 max 350
+set service 110 rule-type v6mask min 350 max 350
+set service 111 rule-type v6mask min 350 max 350
+set service 112 rule-type v6mask min 350 max 350
+set service 113 rule-type v6mask min 350 max 350
+set service 114 rule-type v6mask min 350 max 350
+set service 115 rule-type v6mask min 350 max 350
+set service 116 rule-type v6mask min 350 max 350
+set service 117 rule-type v6mask min 350 max 350
+set service 118 rule-type v6mask min 350 max 350
+set service 119 rule-type v6mask min 350 max 350
+set service 120 rule-type v6mask min 350 max 350
+set service 121 rule-type v6mask min 350 max 350
+set service 122 rule-type v6mask min 350 max 350
+set service 123 rule-type v6mask min 350 max 350
+set service 124 rule-type v6mask min 350 max 350
+set service 125 rule-type v6mask min 350 max 350
+set service 126 rule-type v6mask min 350 max 350
+set service 127 rule-type v6mask min 350 max 350
+set service 128 rule-type v6mask min 350 max 350
+set service 129 rule-type v6mask min 350 max 350
+set service 130 rule-type v6mask min 350 max 350
+set service 131 rule-type v6mask min 350 max 350
+set service 132 rule-type v6mask min 350 max 350
+set service 133 rule-type v6mask min 350 max 350
+set service 134 rule-type v6mask min 350 max 350
+set service 135 rule-type v6mask min 350 max 350
+set service 136 rule-type v6mask min 350 max 350
+set service 137 rule-type v6mask min 350 max 350
+set service 138 rule-type v6mask min 350 max 350
+set service 139 rule-type v6mask min 350 max 350
+set service 140 rule-type v6mask min 350 max 350
+set service 141 rule-type v6mask min 350 max 350
+set service 142 rule-type v6mask min 350 max 350
+set service 143 rule-type v6mask min 350 max 350
+set service 144 rule-type v6mask min 350 max 350
+set service 145 rule-type v6mask min 350 max 350
+set service 146 rule-type v6mask min 350 max 350
+set service 147 rule-type v6mask min 350 max 350
+set service 148 rule-type v6mask min 350 max 350
+set service 149 rule-type v6mask min 350 max 350
+set service 150 rule-type v6mask min 350 max 350
+set service 151 rule-type v6mask min 350 max 350
+set service 152 rule-type v6mask min 350 max 350
+set service 153 rule-type v6mask min 350 max 350
+set service 154 rule-type v6mask min 350 max 350
+set service 155 rule-type v6mask min 350 max 350
+set service 156 rule-type v6mask min 350 max 350
+set service 157 rule-type v6mask min 350 max 350
+set service 158 rule-type v6mask min 350 max 350
+set service 159 rule-type v6mask min 350 max 350
+set service 160 rule-type v6mask min 350 max 350
+set service 161 rule-type v6mask min 350 max 350
+set service 162 rule-type v6mask min 350 max 350
+set service 163 rule-type v6mask min 350 max 350
+set service 164 rule-type v6mask min 350 max 350
+set service 165 rule-type v6mask min 350 max 350
+set service 166 rule-type v6mask min 350 max 350
+set service 167 rule-type v6mask min 350 max 350
+set service 168 rule-type v6mask min 350 max 350
+set service 169 rule-type v6mask min 350 max 350
+set service 170 rule-type v6mask min 350 max 350
+set service 171 rule-type v6mask min 350 max 350
+set service 172 rule-type v6mask min 350 max 350
+set service 173 rule-type v6mask min 350 max 350
+set service 174 rule-type v6mask min 350 max 350
+set service 175 rule-type v6mask min 350 max 350
+set service 176 rule-type v6mask min 350 max 350
+set service 177 rule-type v6mask min 350 max 350
+set service 178 rule-type v6mask min 350 max 350
+set service 179 rule-type v6mask min 350 max 350
+set service 180 rule-type v6mask min 350 max 350
+set service 181 rule-type v6mask min 350 max 350
+set service 182 rule-type v6mask min 350 max 350
+set service 183 rule-type v6mask min 350 max 350
+set service 184 rule-type v6mask min 350 max 350
+set service 185 rule-type v6mask min 350 max 350
+set service 186 rule-type v6mask min 350 max 350
+set service 187 rule-type v6mask min 350 max 350
+set service 188 rule-type v6mask min 350 max 350
+set service 189 rule-type v6mask min 350 max 350
+set service 190 rule-type v6mask min 350 max 350
+set service 191 rule-type v6mask min 350 max 350
+set service 192 rule-type v6mask min 350 max 350
+set service 193 rule-type v6mask min 350 max 350
+set service 194 rule-type v6mask min 350 max 350
+set service 195 rule-type v6mask min 350 max 350
+set service 196 rule-type v6mask min 350 max 350
+set service 197 rule-type v6mask min 350 max 350
+set service 198 rule-type v6mask min 350 max 350
+set service 199 rule-type v6mask min 350 max 350
+set service 200 rule-type v6mask min 350 max 350
+set service 201 rule-type v6mask min 350 max 350
+set service 202 rule-type v6mask min 350 max 350
+set service 203 rule-type v6mask min 350 max 350
+set service 204 rule-type v6mask min 350 max 350
+set service 205 rule-type v6mask min 350 max 350
+set service 206 rule-type v6mask min 350 max 350
+set service 207 rule-type v6mask min 350 max 350
+set service 208 rule-type v6mask min 350 max 350
+set service 209 rule-type v6mask min 350 max 350
+set service 210 rule-type v6mask min 350 max 350
+set service 211 rule-type v6mask min 350 max 350
+set service 212 rule-type v6mask min 350 max 350
+set service 213 rule-type v6mask min 350 max 350
+set service 214 rule-type v6mask min 350 max 350
+set service 215 rule-type v6mask min 350 max 350
+set service 216 rule-type v6mask min 350 max 350
+set service 217 rule-type v6mask min 350 max 350
+set service 218 rule-type v6mask min 350 max 350
+set service 219 rule-type v6mask min 350 max 350
+set service 220 rule-type v6mask min 350 max 350
+set service 221 rule-type v6mask min 350 max 350
+set service 222 rule-type v6mask min 350 max 350
+set service 223 rule-type v6mask min 350 max 350
+set service 224 rule-type v6mask min 350 max 350
+set service 225 rule-type v6mask min 350 max 350
+set service 226 rule-type v6mask min 350 max 350
+set service 227 rule-type v6mask min 350 max 350
+set service 228 rule-type v6mask min 350 max 350
+set service 229 rule-type v6mask min 350 max 350
+set service 230 rule-type v6mask min 350 max 350
+set service 231 rule-type v6mask min 350 max 350
+set service 232 rule-type v6mask min 350 max 350
+set service 233 rule-type v6mask min 350 max 350
+set service 234 rule-type v6mask min 350 max 350
+set service 235 rule-type v6mask min 350 max 350
+set service 236 rule-type v6mask min 350 max 350
+set service 237 rule-type v6mask min 350 max 350
+set service 238 rule-type v6mask min 350 max 350
+set service 239 rule-type v6mask min 350 max 350
+set service 240 rule-type v6mask min 350 max 350
+set service 241 rule-type v6mask min 350 max 350
+set service 242 rule-type v6mask min 350 max 350
+set service 243 rule-type v6mask min 350 max 350
+set service 244 rule-type v6mask min 350 max 350
+set service 245 rule-type v6mask min 350 max 350
+set service 246 rule-type v6mask min 350 max 350
+set service 247 rule-type v6mask min 350 max 350
+set service 248 rule-type v6mask min 350 max 350
+set service 249 rule-type v6mask min 350 max 350
+set service 250 rule-type v6mask min 350 max 350
+set service 251 rule-type v6mask min 350 max 350
+set service 252 rule-type v6mask min 350 max 350
+set service 253 rule-type v6mask min 350 max 350
+set service 254 rule-type v6mask min 700 max 700
+set service 130 rule-type tcpFlag min 10 max 10
+set service 129 rule-type dpi min 4096 max 4096
+
+set service 128 rule-type six-tuple  min 10000 max 10000
+set vpn process enable
+add vpn-map-table VLAN 200 ffffffff vpn 1024 preselected
+add vpn-map-table MPLS 20 ffffffff vpn 1051 preselected
+add rule service 130 tcpflag 0x32 disable static
+add rule service 130 tcpflag 0x16 disable static
+add rule service 130 tcpflag 0x0c disable static
+add rule service 130 tcpflag 0x26 disable static
+add rule service 130 tcpflag 0x2a disable static
+add rule service 130 tcpflag 0x07 disable static
+add rule service 130 tcpflag 0x0b disable static
+add rule service 130 tcpflag 0x31 disable static
+add rule service 130 tcpflag 0x38 disable static
+add rule service 130 tcpflag 0x1a disable static
+
+#############脚本下发老化时间
+set service 0  rule-aging-time 3600
+set service 1  rule-aging-time 3600
+set service 2  rule-aging-time 3600
+set service 3  rule-aging-time 3600
+set service 4  rule-aging-time 3600
+set service 5  rule-aging-time 3600
+set service 6  rule-aging-time 3600
+set service 7  rule-aging-time 3600
+set service 8  rule-aging-time 3600
+set service 9  rule-aging-time 3600
+set service 10  rule-aging-time 3600
+set service 11  rule-aging-time 3600
+set service 12  rule-aging-time 3600
+set service 13  rule-aging-time 3600
+set service 14  rule-aging-time 3600
+set service 15  rule-aging-time 3600
+set service 16  rule-aging-time 3600
+set service 17  rule-aging-time 3600
+set service 18  rule-aging-time 3600
+set service 19  rule-aging-time 3600
+set service 20  rule-aging-time 3600
+set service 21  rule-aging-time 3600
+set service 22  rule-aging-time 3600
+set service 23  rule-aging-time 3600
+set service 24  rule-aging-time 3600
+set service 25  rule-aging-time 3600
+set service 26  rule-aging-time 3600
+set service 27  rule-aging-time 3600
+set service 28  rule-aging-time 3600
+set service 29  rule-aging-time 3600
+set service 30  rule-aging-time 3600
+set service 31  rule-aging-time 3600
+set service 32  rule-aging-time 3600
+set service 33  rule-aging-time 3600
+set service 34  rule-aging-time 3600
+set service 35  rule-aging-time 3600
+set service 36  rule-aging-time 3600
+set service 37  rule-aging-time 3600
+set service 38  rule-aging-time 3600
+set service 39  rule-aging-time 3600
+set service 40  rule-aging-time 3600
+set service 41  rule-aging-time 3600
+set service 42  rule-aging-time 3600
+set service 43  rule-aging-time 3600
+set service 44  rule-aging-time 3600
+set service 45  rule-aging-time 3600
+set service 46  rule-aging-time 3600
+set service 47  rule-aging-time 3600
+set service 48  rule-aging-time 3600
+set service 49  rule-aging-time 3600
+set service 50  rule-aging-time 3600
+set service 51  rule-aging-time 3600
+set service 52  rule-aging-time 3600
+set service 53  rule-aging-time 3600
+set service 54  rule-aging-time 3600
+set service 55  rule-aging-time 3600
+set service 56  rule-aging-time 3600
+set service 57  rule-aging-time 3600
+set service 58  rule-aging-time 3600
+set service 59  rule-aging-time 3600
+set service 60  rule-aging-time 3600
+set service 61  rule-aging-time 3600
+set service 62  rule-aging-time 3600
+set service 63  rule-aging-time 3600
+set service 64  rule-aging-time 3600
+set service 65  rule-aging-time 3600
+set service 66  rule-aging-time 3600
+set service 67  rule-aging-time 3600
+set service 68  rule-aging-time 3600
+set service 69  rule-aging-time 3600
+set service 70  rule-aging-time 3600
+set service 71  rule-aging-time 3600
+set service 72  rule-aging-time 3600
+set service 73  rule-aging-time 3600
+set service 74  rule-aging-time 3600
+set service 75  rule-aging-time 3600
+set service 76  rule-aging-time 3600
+set service 77  rule-aging-time 3600
+set service 78  rule-aging-time 3600
+set service 79  rule-aging-time 3600
+set service 80  rule-aging-time 3600
+set service 81  rule-aging-time 3600
+set service 82  rule-aging-time 3600
+set service 83  rule-aging-time 3600
+set service 84  rule-aging-time 3600
+set service 85  rule-aging-time 3600
+set service 86  rule-aging-time 3600
+set service 87  rule-aging-time 3600
+set service 88  rule-aging-time 3600
+set service 89  rule-aging-time 3600
+set service 90  rule-aging-time 3600
+set service 91  rule-aging-time 3600
+set service 92  rule-aging-time 3600
+set service 93  rule-aging-time 3600
+set service 94  rule-aging-time 3600
+set service 95  rule-aging-time 3600
+set service 96  rule-aging-time 3600
+set service 97  rule-aging-time 3600
+set service 98  rule-aging-time 3600
+set service 99  rule-aging-time 3600
+set service 100  rule-aging-time 3600
+set service 101  rule-aging-time 3600
+set service 102  rule-aging-time 3600
+set service 103  rule-aging-time 3600
+set service 104  rule-aging-time 3600
+set service 105  rule-aging-time 3600
+set service 106  rule-aging-time 3600
+set service 107  rule-aging-time 3600
+set service 108  rule-aging-time 3600
+set service 109  rule-aging-time 3600
+set service 110  rule-aging-time 3600
+set service 111  rule-aging-time 3600
+set service 112  rule-aging-time 3600
+set service 113  rule-aging-time 3600
+set service 114  rule-aging-time 3600
+set service 115  rule-aging-time 3600
+set service 116  rule-aging-time 3600
+set service 117  rule-aging-time 3600
+set service 118  rule-aging-time 3600
+set service 119  rule-aging-time 3600
+set service 120  rule-aging-time 3600
+set service 121  rule-aging-time 3600
+set service 122  rule-aging-time 3600
+set service 123  rule-aging-time 3600
+set service 124  rule-aging-time 3600
+set service 125  rule-aging-time 3600
+set service 126  rule-aging-time 3600
+set service 127  rule-aging-time 3600
+set service 128  rule-aging-time 3600
+set service 129  rule-aging-time 3600
+set service 130  rule-aging-time 3600
+set service 131  rule-aging-time 3600
+set service 132  rule-aging-time 3600
+set service 133  rule-aging-time 3600
+set service 134  rule-aging-time 3600
+set service 135  rule-aging-time 3600
+set service 136  rule-aging-time 3600
+set service 137  rule-aging-time 3600
+set service 138  rule-aging-time 3600
+set service 139  rule-aging-time 3600
+set service 140  rule-aging-time 3600
+set service 141  rule-aging-time 3600
+set service 142  rule-aging-time 3600
+set service 143  rule-aging-time 3600
+set service 144  rule-aging-time 3600
+set service 145  rule-aging-time 3600
+set service 146  rule-aging-time 3600
+set service 147  rule-aging-time 3600
+set service 148  rule-aging-time 3600
+set service 149  rule-aging-time 3600
+set service 150  rule-aging-time 3600
+set service 151  rule-aging-time 3600
+set service 152  rule-aging-time 3600
+set service 153  rule-aging-time 3600
+set service 154  rule-aging-time 3600
+set service 155  rule-aging-time 3600
+set service 156  rule-aging-time 3600
+set service 157  rule-aging-time 3600
+set service 158  rule-aging-time 3600
+set service 159  rule-aging-time 3600
+set service 160  rule-aging-time 3600
+set service 161  rule-aging-time 3600
+set service 162  rule-aging-time 3600
+set service 163  rule-aging-time 3600
+set service 164  rule-aging-time 3600
+set service 165  rule-aging-time 3600
+set service 166  rule-aging-time 3600
+set service 167  rule-aging-time 3600
+set service 168  rule-aging-time 3600
+set service 169  rule-aging-time 3600
+set service 170  rule-aging-time 3600
+set service 171  rule-aging-time 3600
+set service 172  rule-aging-time 3600
+set service 173  rule-aging-time 3600
+set service 174  rule-aging-time 3600
+set service 175  rule-aging-time 3600
+set service 176  rule-aging-time 3600
+set service 177  rule-aging-time 3600
+set service 178  rule-aging-time 3600
+set service 179  rule-aging-time 3600
+set service 180  rule-aging-time 3600
+set service 181  rule-aging-time 3600
+set service 182  rule-aging-time 3600
+set service 183  rule-aging-time 3600
+set service 184  rule-aging-time 3600
+set service 185  rule-aging-time 3600
+set service 186  rule-aging-time 3600
+set service 187  rule-aging-time 3600
+set service 188  rule-aging-time 3600
+set service 189  rule-aging-time 3600
+set service 190  rule-aging-time 3600
+set service 191  rule-aging-time 3600
+set service 192  rule-aging-time 3600
+set service 193  rule-aging-time 3600
+set service 194  rule-aging-time 3600
+set service 195  rule-aging-time 3600
+set service 196  rule-aging-time 3600
+set service 197  rule-aging-time 3600
+set service 198  rule-aging-time 3600
+set service 199  rule-aging-time 3600
+set service 200  rule-aging-time 3600
+set service 201  rule-aging-time 3600
+set service 202  rule-aging-time 3600
+set service 203  rule-aging-time 3600
+set service 204  rule-aging-time 3600
+set service 205  rule-aging-time 3600
+set service 206  rule-aging-time 3600
+set service 207  rule-aging-time 3600
+set service 208  rule-aging-time 3600
+set service 209  rule-aging-time 3600
+set service 210  rule-aging-time 3600
+set service 211  rule-aging-time 3600
+set service 212  rule-aging-time 3600
+set service 213  rule-aging-time 3600
+set service 214  rule-aging-time 3600
+set service 215  rule-aging-time 3600
+set service 216  rule-aging-time 3600
+set service 217  rule-aging-time 3600
+set service 218  rule-aging-time 3600
+set service 219  rule-aging-time 3600
+set service 220  rule-aging-time 3600
+set service 221  rule-aging-time 3600
+set service 222  rule-aging-time 3600
+set service 223  rule-aging-time 3600
+set service 224  rule-aging-time 3600
+set service 225  rule-aging-time 3600
+set service 226  rule-aging-time 3600
+set service 227  rule-aging-time 3600
+set service 228  rule-aging-time 3600
+set service 229  rule-aging-time 3600
+set service 230  rule-aging-time 3600
+set service 231  rule-aging-time 3600
+set service 232  rule-aging-time 3600
+set service 233  rule-aging-time 3600
+set service 234  rule-aging-time 3600
+set service 235  rule-aging-time 3600
+set service 236  rule-aging-time 3600
+set service 237  rule-aging-time 3600
+set service 238  rule-aging-time 3600
+set service 239  rule-aging-time 3600
+set service 240  rule-aging-time 3600
+set service 241  rule-aging-time 3600
+set service 242  rule-aging-time 3600
+set service 243  rule-aging-time 3600
+set service 244  rule-aging-time 3600
+set service 245  rule-aging-time 3600
+set service 246  rule-aging-time 3600
+set service 247  rule-aging-time 3600
+set service 248  rule-aging-time 3600
+set service 249  rule-aging-time 3600
+set service 250  rule-aging-time 3600
+set service 251  rule-aging-time 3600
+set service 252  rule-aging-time 3600
+set service 253  rule-aging-time 3600
+set service 254  rule-aging-time 3600
+
+
+
+
+
+
