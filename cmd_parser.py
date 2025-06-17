@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
-cmd_parser.py  - v0.2
-单行命令  →  JSON
+cmd_parser.py  v0.3
+  • 解决 pandas FutureWarning
+  • 支持把常量关键字一起写进 JSON
+    - 默认 nested 结构；改 NESTED=False 可切换为 “占位名\\常量词” 扁平 key
 依赖: pandas openpyxl
 """
 
@@ -11,118 +12,137 @@ import json
 import re
 import sys
 from pathlib import Path
+from collections import defaultdict
 
 import pandas as pd
 
+# ───────────────── 配置区 ───────────────── #
+NESTED = False    # ← 改成 False 即切换成 “占位名\\常量词” 扁平写法. True为分离式写法
+# ──────────────────────────────────────── #
 
-# ─────────────────── ①  读取 & 预处理语法  ──────────────────── #
+# ───── ① Excel → 语法条目  ───── #
 
 def load_grammar(xlsx_path: Path):
-    """
-    把 Excel 中的 [动作] [对象] [属性和参数] 读出来，编译为正则列表
-    """
     df = pd.read_excel(xlsx_path, engine="openpyxl")
 
-    # 1) 向下填充，使空白单元格继承上一行数值
-    df[["动作", "对象"]] = df[["动作", "对象"]].fillna(method="ffill")
+    # 用 .ffill() 消除 FutureWarning
+    df[["动作", "对象"]] = df[["动作", "对象"]].ffill()
 
     grammar = []
-
     for _, row in df.iterrows():
-        verb_raw = row.get("动作")
-        obj      = row.get("对象")
-        template = row.get("属性和参数")
+        verb_field = row.get("动作")
+        obj        = row.get("对象")
+        template   = row.get("属性和参数")
 
-        if pd.isna(template) or pd.isna(verb_raw) or pd.isna(obj):
+        if pd.isna(template) or pd.isna(verb_field) or pd.isna(obj):
             continue
 
-        verb_raw = str(verb_raw).strip().lower()
-        # 跳过注释行 / 非命令行
-        if not re.match(r"^[a-z]", verb_raw):
+        verb_field = str(verb_field).strip().lower()
+        if not re.match(r"^[a-z]", verb_field):
             continue
-        # 如果模板含中文，也直接跳过（说明那行只是说明）
         if re.search(r"[\u4e00-\u9fff]", str(template)):
             continue
 
-        # 2) 把 'add/remove' 之类拆成 ['add', 'remove']
-        for verb in re.split(r"[/|,]", verb_raw):
+        for verb in re.split(r"[/|,]", verb_field):
             verb = verb.strip()
             if not verb:
                 continue
             try:
-                regex = _compile_template(verb, str(obj).strip(), str(template).strip())
+                regex, const_map = _compile_template(
+                    verb, str(obj).strip(), str(template).strip()
+                )
             except re.error:
-                # 有个别奇葩模板会编不出来，直接忽略
                 continue
-            grammar.append((verb, obj, regex))
+            grammar.append((verb, obj, regex, const_map))
 
     if not grammar:
         raise RuntimeError("⚠️ 读取 Excel 后没有得到任何有效语法，请检查文件格式")
     return grammar
 
 
-# ─────────────────── ②  模板 → 正则  ───────────────────── #
+# ───── ② 把模板编译成正则，并同时记录 “占位符 → 常量词” 对应关系 ───── #
 
 _TOKEN  = re.compile(r"<([^<>]+)>")
 _ALT    = re.compile(r"\{([^{}]+)\}")
 _OPTION = re.compile(r"\[([^\[\]]+)\]")
 
-def _compile_template(verb: str, obj: str, template: str) -> re.Pattern:
+def _compile_template(verb: str, obj: str, template: str):
     """
-    规则转换：
-      {a|b}       →  (?:a|b)
-      [something] →  (?:something)?
-      <name>      →  (?P<name>[^\\s]+)
-    并把多空格折叠为 \\s+ ，最后加上 ^…$ 约束整行
+    返回 (regex_obj, mapping_dict)
+      mapping_dict: {占位符: 常量词 或 None}
     """
 
-    # 1) 处理 {a|b|c}
+    # ── 先找所有 “word <placeholder>” 形式，记录映射 ── #
+    const_map = {}                    # {placeholder: word}
+    for m in re.finditer(r"\b(\w+)\s*<([^<> ]+)>", template):
+        const_map[m.group(2)] = m.group(1)
+
+    # ── 正则替换规则 ── #
+    # 1) {a|b} → (?:a|b)
     template = _ALT.sub(lambda m: "(?:" + "|".join(
         re.escape(x.strip()) for x in m.group(1).split("|") if x.strip()
     ) + ")", template)
 
-    # 2) 暂存 <…> 位置，防止被下一步干扰
+    # 2) stash <placeholder>
     stash = []
     template = _TOKEN.sub(lambda m: f"@@{stash.append(m.group(1)) or len(stash)-1}@@", template)
 
-    # 3) 处理 [optional]
+    # 3) [optional] → (?:...)? 
     template = _OPTION.sub(lambda m: f"(?:{m.group(1)})?", template)
 
-    # 4) 把 @@idx@@ 放回，并变成具名捕获
-    used = {}
+    # 4) put placeholders back as named groups
     def restore(m):
         raw = stash[int(m.group(1))]
         key = re.sub(r"[^\w]+", "_", raw.strip())
         if not key or key[0].isdigit():
-            key = "arg_" + key              # 组名必须非数字开头
-        cnt = used.get(key, 0)
-        used[key] = cnt + 1
-        if cnt:
-            key = f"{key}_{cnt}"
+            key = "arg_" + key
         return fr"(?P<{key}>[^\s]+)"
     template = re.sub(r"@@(\d+)@@", restore, template)
 
-    # 5) 拼最终正则
-    pattern = re.sub(r"\s+", r"\\s+", f"{verb} {obj} {template}".strip())
-    return re.compile(rf"^{pattern}$", re.IGNORECASE)
+    # 5) final regex
+    patt = re.sub(r"\s+", r"\\s+", f"{verb} {obj} {template}".strip())
+    regex = re.compile(rf"^{patt}$", re.IGNORECASE)
+    return regex, const_map
 
 
-# ─────────────────── ③  匹配函数  ─────────────────────── #
+# ───── ③ 匹配并构造 JSON ───── #
 
 def parse_command(cmd: str, grammar):
     cmd = cmd.strip()
-    for verb, obj, regex in grammar:
+    for verb, obj, regex, const_map in grammar:
         m = regex.match(cmd)
-        if m:
-            return {"verb": verb, "object": obj, "args": m.groupdict()}
+        if not m:
+            continue
+
+        raw_args = m.groupdict()
+
+        # 3-A 组装成你想要的 JSON 结构
+        if NESTED:
+            grouped = defaultdict(dict)
+            for k, v in raw_args.items():
+                parent = const_map.get(k)
+                if parent:
+                    grouped[parent][k] = v
+                else:                   # 没有常量词的占位符直接放顶层
+                    grouped[k] = v
+            args_out = dict(grouped)
+        else:  # 扁平写法：key = 占位符\常量词 or 占位符
+            args_out = {}
+            for k, v in raw_args.items():
+                prefix = const_map.get(k)
+                key = f"{k}\\{prefix}" if prefix else k
+                args_out[key] = v
+
+        return {"verb": verb, "object": obj, "args": args_out}
+
     return None
 
 
-# ─────────────────── ④  CLI  ─────────────────────────── #
+# ───── ④ CLI ───── #
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python cmd_parser.py \"<command line>\"")
+        print("Usage:  python cmd_parser.py \"<command line>\"")
         sys.exit(1)
 
     xlsx_path = Path(__file__).with_name("命令树-G.xlsx")
