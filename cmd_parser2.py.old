@@ -1,0 +1,199 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+cmd_parser.py – v0.9  (2025‑06‑17)
+===================================
+• **padding 2.0** — 现在会把模板中出现的 *所有* 纯常量词（即不在 <…> / {...} / [...] 里的单词）收集，按原顺序合并为一个字符串写入 `padding`；不再仅限首段。
+    - `<id> protect-channel <slot>` → `padding: "protect-channel"`
+    - `<id> verify <disable | enable>` → `padding: "verify"`
+
+• 仍维持占位符捕获顺序 + 键名写法 `placeholder\const`。
+
+依赖：pandas  openpyxl
+"""
+from __future__ import annotations
+
+import argparse, json, re, sys
+from collections import OrderedDict
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+import pandas as pd
+
+# ────────── CONFIG ────────── #
+NESTED = False
+CAPTURE_CONST_ONLY = True
+ALWAYS_APPEND_SLASH = True
+ADD_PADDING = True
+PADDING_KEY_NAME = "padding"
+DEBUG_DEFAULT = False
+MAX_ERRORS_TO_SHOW = 20
+SKIP_VERBS = {"show"}
+# ─────────────────────────── #
+
+_TOKEN = re.compile(r"<([^<>]+)>")
+_ALT = re.compile(r"{([^{}]+)}")
+_OPTION = re.compile(r"\[([^\[\]]+)]")
+GrammarEntry = Tuple[str, str, re.Pattern, Dict[str, Optional[str]], int, str, List[str], str]
+
+# ---------- helper ----------
+
+def _sanitize(raw: str) -> str:
+    key = re.sub(r"[^0-9A-Za-z_]", "_", raw.strip())
+    if not key or key[0].isdigit():
+        key = "arg_" + key
+    return key
+
+# ---------- Excel → grammar ----------
+
+def load_grammar(xlsx: Path):
+    df = pd.read_excel(xlsx, engine="openpyxl")
+    df[["动作", "对象"]] = df[["动作", "对象"]].ffill()
+
+    grammar, errors = [], []
+    for idx, (_, row) in enumerate(df.iterrows(), start=2):
+        verb_field, obj, template = row["动作"], row["对象"], row["属性和参数"]
+        if pd.isna(template) or pd.isna(verb_field) or pd.isna(obj):
+            continue
+        verb_field = str(verb_field).strip().lower()
+        if not re.match(r"^[a-z]", verb_field):
+            continue
+        template = str(template).strip()
+        if re.search(r"[\u4e00-\u9fff]", template):
+            continue
+        for verb in re.split(r"[/|,]", verb_field):
+            verb = verb.strip()
+            if not verb or verb in SKIP_VERBS:
+                continue
+            try:
+                rx, cmap, con_only, const_str = _compile_template(verb, str(obj).strip(), template)
+                grammar.append((verb, obj, rx, cmap, idx, template, con_only, const_str))
+            except re.error as e:
+                if len(errors) < MAX_ERRORS_TO_SHOW:
+                    errors.append(f"# row {idx}: {e}")
+    if errors and DEBUG_DEFAULT:
+        print("\n".join(errors))
+    if not grammar:
+        raise RuntimeError("❌ grammar compile failed")
+    return grammar
+
+# ---------- template → regex ----------
+
+def _compile_template(verb: str, obj: str, temp: str):
+    const_map: Dict[str, Optional[str]] = {}
+    const_only: List[str] = []
+    duplicate: Dict[str, int] = {}
+    anon = 0
+
+        # collect pure constant tokens (exclude anything within <> {} \[\])
+    def strip_brackets(s: str) -> str:
+        # remove bracketed segments entirely for padding detection
+        s = re.sub(r"<[^<>]*>", " ", s)
+        s = re.sub(r"{[^{}]*}", " ", s)
+        s = re.sub(r"\[[^\[\]]*]", " ", s)
+        return s
+    const_candidates = strip_brackets(temp).split()
+    constant_tokens = [tk for tk in const_candidates if tk]
+    const_str = " ".join(constant_tokens)
+
+    # {a|b}
+    def repl_alt(m):
+        nonlocal anon
+        body = m.group(1)
+        if "<" in body or ">" in body:
+            return m.group(0)
+        choices = [p.strip() for p in body.split("|") if p.strip()]
+        name = f"anon_{anon}"; anon += 1
+        const_map[name] = None
+        return f"(?P<{name}>{'|'.join(map(re.escape, choices))})"
+    pattern = _ALT.sub(repl_alt, temp)
+
+    # [optional]
+    pattern = _OPTION.sub(lambda m: f"(?:{m.group(1)})?", pattern)
+
+    # stash <placeholder>
+    stash: List[str] = []
+    pattern = _TOKEN.sub(lambda m: f"@@{stash.append(m.group(1)) or len(stash)-1}@@", pattern)
+
+    # restore
+    def restore(m):
+        raw = stash[int(m.group(1))]
+        nonlocal anon
+        if "|" in raw:
+            parts = [p.strip() for p in raw.split("|") if p.strip()]
+            name = f"value_{anon}"; anon += 1
+            const_map[name] = None
+            return f"(?P<{name}>{'|'.join(map(re.escape, parts))})""(?P<{name}>{'|'.join(map(re.escape, parts))})"
+        key = _sanitize(raw)
+        cnt = duplicate.get(key, 0)
+        duplicate[key] = cnt + 1
+        if cnt:
+            key = f"{key}_{cnt}"
+        const_map.setdefault(key, None)
+        return fr"(?P<{key}>[^\s]+)"
+    pattern = re.sub(r"@@(\d+)@@", restore, pattern)
+
+    if not re.search(r"\(\?P<", pattern) and CAPTURE_CONST_ONLY:
+        const_only.extend([w for w in temp.split() if w.isalpha()])
+
+    regex = re.compile(rf"^{re.sub(r'\s+', r'\\s+', f'{verb} {obj} {pattern}'.strip())}$", re.IGNORECASE)
+    return regex, const_map, const_only, const_str
+
+# ---------- parse ----------
+
+def parse(cmd: str, grammar):
+    for verb, obj, rx, cmap, row, template, con_only, const_str in grammar:
+        m = rx.match(cmd)
+        if not m:
+            continue
+        gd = m.groupdict()
+        args_od = OrderedDict()
+
+        if ADD_PADDING and const_str:
+            args_od[PADDING_KEY_NAME] = const_str
+
+        for p in rx.groupindex:
+            if p in gd and gd[p] is not None:
+                const = cmap.get(p) or ""
+                key = f"{p}\\{const}" if (const or ALWAYS_APPEND_SLASH) else p
+                args_od[key] = gd[p]
+
+        if not gd and con_only:
+            for t in con_only:
+                key = t + ("\\" if ALWAYS_APPEND_SLASH else "")
+                args_od[key] = None
+
+        return {"verb": verb, "object": obj, "args": dict(args_od)}, {"row": row, "template": template}
+    return None, None
+
+# ---------- CLI ----------
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("command", help="command in quotes")
+    ap.add_argument("-v", "--verbose", action="store_true")
+    a = ap.parse_args()
+
+    cmd = a.command.strip()
+    if cmd.split(maxsplit=1)[0].lower() in SKIP_VERBS:
+        print(f"# ⏭ ignore verb: {cmd}")
+        sys.exit(0)
+
+    xlsx = Path(__file__).with_name("命令树-G.xlsx")
+    if not xlsx.exists():
+        print("❌ grammar xlsx not found"); sys.exit(2)
+
+    global DEBUG_DEFAULT
+    DEBUG_DEFAULT = DEBUG_DEFAULT or a.verbose
+
+    grammar = load_grammar(xlsx)
+    result, dbg = parse(cmd, grammar)
+    if result is None:
+        print("❌ no match"); sys.exit(3)
+
+    if DEBUG_DEFAULT:
+        print(f"# matched row {dbg['row']} template: {dbg['template']}")
+
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+
+if __name__ == "__main__":
+    main()
