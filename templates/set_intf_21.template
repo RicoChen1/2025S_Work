@@ -1,0 +1,5 @@
+# Auto‑generated template set_intf_21
+Value INTF_NAME (\S+)
+Value MAC_ADDR (\S+)
+Start
+  ^set\s+intf\s+${INTF_NAME}\s+(?:${INTF_NAME})?\s+(?:~\s+${INTF_NAME})?\s+mac\s+${MAC_ADDR}\s*$$ -> Record

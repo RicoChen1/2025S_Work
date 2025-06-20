@@ -1,0 +1,4 @@
+# Auto‑generated template set_intf_7
+Value INTF_NAME (\S+)
+Start
+  ^set\s+intf\s+${INTF_NAME}\s+(?:${INTF_NAME})?\s+(?:~\s+${INTF_NAME})?\s+speed\s+(100G|40G|25G|10G|1G)\s*$$ -> Record

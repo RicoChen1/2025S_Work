@@ -1,0 +1,5 @@
+# Auto‑generated template set_intf_14
+Value INTF_NAME (\S+)
+Value 8_40 (\S+)
+Start
+  ^set\s+intf\s+${INTF_NAME}\s+(?:${INTF_NAME})?\s+(?:~\s+${INTF_NAME})?\s+ipg\s+${8_40}\s*$$ -> Record

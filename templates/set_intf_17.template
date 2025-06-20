@@ -1,0 +1,4 @@
+# Auto‑generated template set_intf_17
+Value INTF_NAME (\S+)
+Start
+  ^set\s+intf\s+${INTF_NAME}\s+(?:${INTF_NAME})?\s+(?:~\s+${INTF_NAME})?\s+shutdown\s+(enable|disable)\s*$$ -> Record

@@ -1,0 +1,7 @@
+# Auto‑generated template set_intf_24
+Value INTF_NAME (\S+)
+Value IP_ADDR (\S+)
+Value MAC_ADDR (\S+)
+Value VID (\S+)
+Start
+  ^set\s+intf\s+${INTF_NAME}\s+arp-table\s+${IP_ADDR}\s+${MAC_ADDR}\s+(?:vlan\s+${VID})?\s+(?:static\|dynamic)?\s*$$ -> Record

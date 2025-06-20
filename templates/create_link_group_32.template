@@ -1,0 +1,5 @@
+# Auto‑generated template create_link-group_32
+Value INTFA (\S+)
+Value INTFB (\S+)
+Start
+  ^create\s+link-group\s+i2c-port-intf\s+${INTFA}\s+c2i-port-intf\s+${INTFB}\s*$$ -> Record

@@ -1,0 +1,5 @@
+# Auto‑generated template set_intf_2
+Value INTF_NAME (\S+)
+Value STRING (\S+)
+Start
+  ^set\s+intf\s+${INTF_NAME}\s+byname\s+${STRING}\s*$$ -> Record

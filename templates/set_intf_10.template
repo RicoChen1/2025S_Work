@@ -1,0 +1,5 @@
+# Auto‑generated template set_intf_10
+Value INTF_NAME (\S+)
+Value SPEED_VALUE (\S+)
+Start
+  ^set\s+intf\s+${INTF_NAME}\s+(?:${INTF_NAME})?\s+(?:~\s+${INTF_NAME})?\s+storm-ctrl\s+(broadcast|unicast|multicast)\s+${SPEED_VALUE}\s*$$ -> Record

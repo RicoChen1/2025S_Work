@@ -1,0 +1,3 @@
+# Auto‑generated template 动作_对象_1
+Start
+  ^动作\s+对象\s+属性和参数\s*$$ -> Record
