@@ -1,5 +1,8 @@
-# Excel temp file
+\# Excel temp file
 ~$*
+
+# FSM file, optional.
+templates
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
