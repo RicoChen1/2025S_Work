@@ -1,192 +1,183 @@
 #!/usr/bin/env python3
-"""
-transf.py — Excel → TextFSM template generator
+r"""
+transf.py — Excel → TextFSM template generator (v0.3)
+====================================================
+* **Fix**   : remove `SyntaxWarning` by making top‑level docstring *raw*.
+* **Sanitize**: strip CR/LF inside template cells → single‑line CLI.
+* **Chinese** : rows containing CJK still filtered out (unchanged).
+* **Ellipsis `...`** : if a token equals `...` *or* a brace‑token contains
+  literal `...`, interpret it as **wildcard list** (`.*`) so templates with
+  “省略号” keep working without manual cleanup.
+* **Comma retention**: simple heuristic — when original token contained a
+  comma outside brackets, we emit a literal `,` in pattern so positional
+  commas are preserved.
 
-Usage examples
---------------
-# 1) 生成 templates 目录下的 .template 文件，并把规范化后的语法写入 syntax.txt
+Usage (unchanged)
+-----------------
+```bash
 python transf.py 命令树-G.xlsx --syntax-file syntax.txt
-
-# 2) 仅打印到终端，且不生成模板文件
-python transf.py 命令树-G.xlsx --no-template
-
-依赖：pandas, openpyxl, textfsm (仅运行时解析时才需 textfsm)
+auto‑preview: python transf.py 命令树-G.xlsx --no-template
+```
 """
-
 from __future__ import annotations
 
 import argparse
-import os
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 import pandas as pd
 
 # ---------------------------------------------------------------------------
-# Helpers -------------------------------------------------------------------
+# Regex helpers -------------------------------------------------------------
 # ---------------------------------------------------------------------------
 
-TOKEN_PATTERN = re.compile(r"(<[^>]+>|\{[^}]+\}|\[[^]]+\]|[^\s,]+)")
-
-# Characters that must be escaped in TextFSM fixed tokens
-_NEED_ESCAPE = set(r".^$*+?()[{\|")
-
-def _escape(token: str) -> str:
-    """Escape regex-special chars inside a fixed token so it stays literal."""
-    return "".join(f"\\{c}" if c in _NEED_ESCAPE else c for c in token)
+TOKEN_PATTERN = re.compile(r"(<[^>]+>|\{[^}]+\}|\[[^]]+\]|[.,]|[^\s,;]+)")
+NEED_ESCAPE = set(r".^$*+?()[{\\|")
+CHINESE_RE = re.compile(r"[\u4e00-\u9fff]")  # basic CJK block
 
 
-def normalize_row(row: pd.Series, prev_verb: str | None, prev_obj: str | None) -> Tuple[str, str, str] | None:
-    """Return (verb, object, template) or None if the row is not a valid template line."""
-    # Excel: col0 = category(中文), col1 = verb, col2 = object, col3 = template string
-    verb = row.iloc[1] if pd.notna(row.iloc[1]) else prev_verb
-    obj = row.iloc[2] if pd.notna(row.iloc[2]) else prev_obj
-    template = row.iloc[3]
+def escape_lit(text: str) -> str:
+    return "".join(f"\\{c}" if c in NEED_ESCAPE else c for c in text)
 
-    if pd.isna(template) or pd.isna(verb) or pd.isna(obj):
-        return None
-    verb = str(verb).strip()
-    obj = str(obj).strip()
-    template = str(template).strip()
-    if verb.lower() == "show":  # 忽略 show 类命令
-        return None
-    return verb, obj, template
+
+def has_chinese(s: str) -> bool:
+    return bool(CHINESE_RE.search(s))
 
 
 # ---------------------------------------------------------------------------
-# Template generation --------------------------------------------------------
+# Row normalisation ---------------------------------------------------------
+# ---------------------------------------------------------------------------
+
+def normalize_row(row: pd.Series, prev_v: str | None, prev_o: str | None):
+    verb = row.iloc[1] if pd.notna(row.iloc[1]) else prev_v
+    obj = row.iloc[2] if pd.notna(row.iloc[2]) else prev_o
+    tpl = row.iloc[3]
+    if any(pd.isna(x) for x in (verb, obj, tpl)):
+        return None
+
+    verb, obj = str(verb).strip(), str(obj).strip()
+    tpl = re.sub(r"[\r\n]+", " ", str(tpl)).strip()  # ← remove internal CR/LF
+
+    if verb.lower() == "show" or has_chinese(verb + obj + tpl):
+        return None
+    return verb, obj, tpl
+
+
+# ---------------------------------------------------------------------------
+# Token → pattern converter --------------------------------------------------
 # ---------------------------------------------------------------------------
 
 def slug(name: str) -> str:
-    """Make a legal TextFSM variable name: uppercase, non-word -> underscore"""
-    return re.sub(r"\W+", "_", name).upper().strip("_") or "VAR"
+    import re as _re
+    return _re.sub(r"\W+", "_", name).upper().strip("_") or "VAR"
 
 
-def convert_tokens(tokens: List[str]) -> Tuple[str, List[str]]:
-    """Convert token list into TextFSM regex pattern & collect variable names."""
-    var_defs: List[str] = []  # Value lines
-    pattern_parts: List[str] = []
-    var_count = 1
+def conv_tokens(tokens: List[str]):  # → (pattern, var_list)
+    parts: List[str] = []
+    vars_: List[str] = []
 
-    def _handle(token: str):
-        nonlocal var_count
-        # <...> 变量占位符或变量名枚举
-        if token.startswith("<") and token.endswith(">"):
-            inner = token[1:-1].strip()
-            # 如果包含 | 则还是变量；直接给一个占位符名
-            vname = slug(inner.split("|")[0])
-            if vname not in var_defs:
-                var_defs.append(vname)
-            pattern_parts.append(f"${{{vname}}}")
-
-        # {a|b|c} 固定关键字枚举
-        elif token.startswith("{") and token.endswith("}"):
-            opts = token[1:-1].strip()
-            pattern_parts.append(f"({opts})")
-
-        # [ ... ] 可选段，递归处理
-        elif token.startswith("[") and token.endswith("]"):
-            inner = token[1:-1].strip()
-            sub_tokens = TOKEN_PATTERN.findall(inner)
-            sub_pattern, sub_vars = convert_tokens(sub_tokens)
-            # merge new vars (avoid duplicates)
-            for v in sub_vars:
-                if v not in var_defs:
-                    var_defs.append(v)
-            pattern_parts.append(f"(?:{sub_pattern})?")
-
-        # 普通固定单词
-        else:
-            pattern_parts.append(_escape(token))
+    def add_var(v):
+        if v not in vars_:
+            vars_.append(v)
+        parts.append(f"${{{v}}}")
 
     for tok in tokens:
-        _handle(tok)
-    pattern = r"\s+".join(pattern_parts)
-    return pattern, var_defs
+        if tok.isspace() or not tok:
+            continue
+        # Comma or standalone punctuation
+        if tok == ',':
+            parts.append(',')
+            continue
+        if tok == '...':
+            parts.append(r".*")
+            continue
+
+        if tok.startswith('<') and tok.endswith('>'):
+            v = slug(tok[1:-1].split('|')[0])
+            add_var(v)
+        elif tok.startswith('{') and tok.endswith('}'):
+            inner = tok[1:-1]
+            if '...' in inner:
+                # wildcard list inside braces
+                parts.append(r".*")
+            else:
+                parts.append(f"({inner})")
+        elif tok.startswith('[') and tok.endswith(']'):
+            inner = tok[1:-1]
+            p, sub_vars = conv_tokens(TOKEN_PATTERN.findall(inner))
+            for v in sub_vars:
+                if v not in vars_:
+                    vars_.append(v)
+            parts.append(f"(?:{p})?")
+        else:
+            parts.append(escape_lit(tok))
+    return r"\s+".join(parts), vars_
 
 
-def build_textfsm_template(cmd_line: str, template_id: str) -> str:
-    """Return the full TextFSM template text for a single command line."""
-    tokens = TOKEN_PATTERN.findall(cmd_line)
-    pattern_body, vars_ = convert_tokens(tokens)
-
-    header_lines = [f"# Auto‑generated template {template_id}"]
-    for v in vars_:
-        header_lines.append(f"Value {v} (\\S+)")
-
-    header_lines.append("Start")
-    header_lines.append(f"  ^{pattern_body}\s*$$ -> Record")
-
-    return "\n".join(header_lines) + "\n"
+def build_template(cmd_body: str, tpl_id: str) -> str:
+    toks = TOKEN_PATTERN.findall(cmd_body)
+    pattern, vlist = conv_tokens(toks)
+    lines = [f"# Auto‑generated {tpl_id}"] + [f"Value {v} (\\S+)" for v in vlist]
+    lines += ["Start", rf"  ^{pattern}\s*$$ -> Record"]
+    return "\n".join(lines) + "\n"
 
 
 # ---------------------------------------------------------------------------
-# Main driver ----------------------------------------------------------------
+# Main driver ---------------------------------------------------------------
 # ---------------------------------------------------------------------------
 
 def main():
-    parser = argparse.ArgumentParser(description="Excel → TextFSM template generator")
-    parser.add_argument("excel", help="Path to input .xlsx file")
-    parser.add_argument("--templates-dir", default="templates", help="Directory to store .template files")
-    parser.add_argument("--syntax-file", help="Write normalized syntax (one per line) to this file")
-    parser.add_argument("--no-template", action="store_true", help="Do not write .template files, only list syntax")
-    args = parser.parse_args()
+    ap = argparse.ArgumentParser(description="Excel → TextFSM template generator")
+    ap.add_argument("excel", help="Input .xlsx file")
+    ap.add_argument("--templates-dir", default="templates")
+    ap.add_argument("--syntax-file")
+    ap.add_argument("--no-template", action="store_true")
+    args = ap.parse_args()
 
-    xl_path = Path(args.excel)
-    if not xl_path.is_file():
-        print(f"[ERROR] Excel file '{xl_path}' not found", file=sys.stderr)
-        sys.exit(1)
+    xl = Path(args.excel)
+    if not xl.is_file():
+        sys.exit(f"file not found: {xl}")
 
-    df = pd.read_excel(xl_path, header=None, engine="openpyxl")
+    df = pd.read_excel(xl, header=None, engine="openpyxl")
 
-    records: List[Tuple[str, str, str]] = []
-    prev_verb = prev_obj = None
-    for _, row in df.iterrows():
-        result = normalize_row(row, prev_verb, prev_obj)
-        if result is None:
-            # keep previous verb/obj if row was blank or skipped
-            if pd.notna(row.iloc[1]):
-                prev_verb = str(row.iloc[1]).strip()
-            if pd.notna(row.iloc[2]):
-                prev_obj = str(row.iloc[2]).strip()
-            continue
-        verb, obj, template = result
-        prev_verb, prev_obj = verb, obj
-        records.append((verb, obj, template))
+    recs: List[Tuple[str, str, str]] = []
+    pv = po = None
+    for _, r in df.iterrows():
+        nr = normalize_row(r, pv, po)
+        if nr:
+            pv, po = nr[0], nr[1]
+            recs.append(nr)
+        else:
+            if pd.notna(r.iloc[1]):
+                pv = str(r.iloc[1]).strip()
+            if pd.notna(r.iloc[2]):
+                po = str(r.iloc[2]).strip()
 
-    if not records:
-        print("[WARN] No valid templates found in Excel", file=sys.stderr)
-        sys.exit(0)
-
-    syntax_lines: List[str] = []
+    if not recs:
+        sys.exit("No valid rows found.")
 
     if not args.no_template:
-        out_dir = Path(args.templates_dir)
-        out_dir.mkdir(parents=True, exist_ok=True)
+        Path(args.templates_dir).mkdir(parents=True, exist_ok=True)
 
-    for idx, (verb, obj, tpl) in enumerate(records, 1):
-        cmd = f"{verb} {obj} {tpl}"
-        syntax_lines.append(cmd)
-
+    syntax_out: List[str] = []
+    for idx, (verb, obj, tpl) in enumerate(recs, 1):
+        body = f"{verb} {obj} {tpl}"
+        syntax_out.append(body + ';')
         if not args.no_template:
-            template_text = build_textfsm_template(cmd, f"{verb}_{obj}_{idx}")
-            file_name = f"{verb}_{obj}_{idx}.template".replace("-", "_")
-            with open((Path(args.templates_dir) / file_name), "w", encoding="utf-8") as f:
-                f.write(template_text)
+            t_text = build_template(body, f"{verb}_{obj}_{idx}")
+            fname = f"{verb}_{obj}_{idx}.template".replace('-', '_')
+            (Path(args.templates_dir)/fname).write_text(t_text, encoding='utf-8')
 
-    # Write syntax file or print
     if args.syntax_file:
-        with open(args.syntax_file, "w", encoding="utf-8") as f:
-            for line in syntax_lines:
-                f.write(line + "\n")
-        print(f"[OK] Wrote {len(syntax_lines)} syntax lines to {args.syntax_file}")
+        Path(args.syntax_file).write_text("\n".join(syntax_out), encoding='utf-8')
+        print(f"wrote {len(syntax_out)} lines → {args.syntax_file}")
     else:
-        print(";\n".join(syntax_lines))
+        print("\n".join(syntax_out))
 
     if not args.no_template:
-        print(f"[OK] Generated {len(records)} .template files under '{args.templates_dir}'")
+        print(f"generated {len(syntax_out)} .template files → {args.templates_dir}/")
 
 
 if __name__ == "__main__":
