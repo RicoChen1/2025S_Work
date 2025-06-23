@@ -2,7 +2,7 @@
 ~$*
 
 # FSM file, optional.
-templates
+templates/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
