@@ -80,11 +80,14 @@ def slug(name: str) -> str:
 def conv_tokens(tokens: List[str]):  # → (regex_pattern, var_list)
     parts: List[str] = []
     vars_: List[str] = []
+    var_counts = {}  # 记录每种变量出现次数
 
     def add_var(v):
-        if v not in vars_:
-            vars_.append(v)
-        parts.append(f"${{{v}}}")
+        count = var_counts.get(v, 0) + 1
+        var_counts[v] = count
+        v_unique = f"{v}_{count}" if count > 1 else v
+        vars_.append(v_unique)
+        parts.append(f"${{{v_unique}}}")
 
     for tok in tokens:
         if not tok or tok.isspace():
@@ -119,6 +122,7 @@ def build_template(cmd_body: str, tpl_id: str) -> str:
     pattern, vlist = conv_tokens(toks)
     lines = [f"# Auto-generated {tpl_id}"]
     lines += [f"Value {v} (\\S+)" for v in vlist]
+    lines.append("")  # 插入额外空行
     lines += ["Start", rf"  ^{pattern}\s*$$ -> Record"]
     return "\n".join(lines) + "\n"
 
