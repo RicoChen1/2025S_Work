@@ -1,8 +1,0 @@
-# Auto‑generated template set_intf_25
-Value INTF_NAME (\S+)
-Value IP_ADDR (\S+)
-Value MASK (\S+)
-Value NEXTHOP_IP (\S+)
-Value VID (\S+)
-Start
-  ^set\s+intf\s+${INTF_NAME}\s+ip-route\s+${IP_ADDR}\s+${MASK}\s+${NEXTHOP_IP}\s+(?:vlan\s+${VID})?\s*$$ -> Record

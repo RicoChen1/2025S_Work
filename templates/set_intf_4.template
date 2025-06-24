@@ -1,6 +1,0 @@
-# Auto‑generated template set_intf_4
-Value INTF_NAME (\S+)
-Value IP_ADDR (\S+)
-Value MASK (\S+)
-Start
-  ^set\s+intf\s+${INTF_NAME}\s+ip\s+${IP_ADDR}\s+${MASK}\s*$$ -> Record

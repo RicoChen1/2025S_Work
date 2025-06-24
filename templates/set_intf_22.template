@@ -1,4 +1,0 @@
-# Auto‑generated template set_intf_22
-Value INTF_NAME (\S+)
-Start
-  ^set\s+intf\s+${INTF_NAME}\s+(?:${INTF_NAME})?\s+(?:~\s+${INTF_NAME})?\s+mac\s+learning\s+(om|off)\s*$$ -> Record

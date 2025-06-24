@@ -1,4 +1,0 @@
-# Auto‑generated template set_intf_26
-Value INTF_NAME (\S+)
-Start
-  ^set\s+intf\s+${INTF_NAME}\s*$$ -> Record

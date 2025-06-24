@@ -1,5 +1,0 @@
-# Auto‑generated template set_intf_11
-Value INTF_NAME (\S+)
-Value 1500_9000 (\S+)
-Start
-  ^set\s+intf\s+${INTF_NAME}\s+(?:${INTF_NAME})?\s+(?:~\s+${INTF_NAME})?\s+mtu\s+${1500_9000}\s*$$ -> Record

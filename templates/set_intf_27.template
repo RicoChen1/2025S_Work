@@ -1,4 +1,0 @@
-# Auto‑generated template set_intf_27
-Value INTF_NAME (\S+)
-Start
-  ^set\s+intf\s+(?:${INTF_NAME})?\s+optical-mode\s+info\s*$$ -> Record

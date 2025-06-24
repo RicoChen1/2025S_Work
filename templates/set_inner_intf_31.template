@@ -1,6 +1,0 @@
-# Auto‑generated template set_inner-intf_31
-Value TYPE (\S+)
-Value SLOT (\S+)
-Value PORT (\S+)
-Start
-  ^set\s+inner-intf\s+${TYPE}\s+${SLOT}\s+${PORT}\s+rx\s+(enable | disable)\s+tx\s+(enable | disable)\s*$$ -> Record

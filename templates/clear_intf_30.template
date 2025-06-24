@@ -1,4 +1,0 @@
-# Auto‑generated template clear_intf_30
-Value INTF_NAME (\S+)
-Start
-  ^clear\s+intf\s+(?:${INTF_NAME})?\s+count\s*$$ -> Record

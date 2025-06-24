@@ -1,5 +1,0 @@
-# Auto‑generated template set_intf_3
-Value INTF_NAME (\S+)
-Value STRING (\S+)
-Start
-  ^set\s+intf\s+${INTF_NAME}\s+description\s+${STRING}\s+(?:rx\s+${STRING})?\s+(?:tx\s+${STRING})?\s*$$ -> Record
