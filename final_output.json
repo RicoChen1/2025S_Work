@@ -1,0 +1,194 @@
+[
+  {
+    "verb": "add",
+    "object": "rcp",
+    "args": {
+      "USRNAME": "admin",
+      "PASSWARD": "admin",
+      "IP": "10.10.11.62",
+      "PORT": "1000"
+    },
+    "RAW": "add rcp user admin admin 10.10.11.62 1000",
+    "RULE": "user <usrname> <passward> <ip> <port>",
+    "matched_template": "add_rcp_98"
+  },
+  {
+    "verb": "add",
+    "object": "syslog",
+    "args": {
+      "IP": "10.10.11.183",
+      "PORT": "514"
+    },
+    "RAW": "add syslog host 10.10.11.183 514",
+    "RULE": "host <ip> <port>",
+    "matched_template": "add_syslog_256"
+  },
+  {
+    "verb": "add",
+    "object": "snmp",
+    "args": {
+      "VIEWNAME": "aaa"
+    },
+    "RAW": "add snmp agent viewscope aaa",
+    "RULE": "agent viewscope <viewname>",
+    "matched_template": "add_snmp_111"
+  },
+  {
+    "verb": "add",
+    "object": "snmp",
+    "args": {
+      "NAME": "public",
+      "VIEWSCOPE": "ro",
+      "ACCESS": "aaa"
+    },
+    "RAW": "add snmp agent community public ro aaa",
+    "RULE": "agent community <name> <viewscope> <access>",
+    "matched_template": "add_snmp_110"
+  },
+  {
+    "verb": "bind",
+    "object": "link-group",
+    "args": {
+      "ID": "1",
+      "SLOT": "4",
+      "CHANNEL": "0"
+    },
+    "RAW": "bind link-group 1 protect-channel 4 0",
+    "RULE": "<id> protect-channel <slot> <channel>",
+    "matched_template": "bind_link_group_32"
+  },
+  {
+    "verb": "set",
+    "object": "link-group",
+    "args": {
+      "ID": "1",
+      "OBYPASS": "pass"
+    },
+    "RAW": "set link-group 1 protect-access-mode  pass",
+    "RULE": "<id> protect-access-mode <obypass | ebypass | shutdown | pass>",
+    "matched_template": "set_link_group_40"
+  },
+  {
+    "verb": "bind",
+    "object": "link-group",
+    "args": {
+      "ID": "2",
+      "SLOT": "4",
+      "CHANNEL": "2"
+    },
+    "RAW": "bind link-group 2 protect-channel 4 2",
+    "RULE": "<id> protect-channel <slot> <channel>",
+    "matched_template": "bind_link_group_32"
+  },
+  {
+    "verb": "set",
+    "object": "link-group",
+    "args": {
+      "ID": "2",
+      "OBYPASS": "pass"
+    },
+    "RAW": "set link-group 2 protect-access-mode  pass",
+    "RULE": "<id> protect-access-mode <obypass | ebypass | shutdown | pass>",
+    "matched_template": "set_link_group_40"
+  },
+  {
+    "verb": "set",
+    "object": "link-group",
+    "args": {
+      "ID": "1",
+      "PHYSICAL_FORCE": "soft-auto"
+    },
+    "RAW": "set link-group 1 protect-run-mode soft-auto",
+    "RULE": "<id> protect-run-mode <physical-force | soft-manual | soft-auto>",
+    "matched_template": "set_link_group_43"
+  },
+  {
+    "verb": "set",
+    "object": "link-group",
+    "args": {
+      "ID": "1",
+      "MANUAL": "auto"
+    },
+    "RAW": "set link-group 1 protect-cutback-mode auto",
+    "RULE": "<id> protect-cutback-mode <manual | auto>",
+    "matched_template": "set_link_group_41"
+  },
+  {
+    "verb": "set",
+    "object": "link-group",
+    "args": {
+      "ID": "2",
+      "PHYSICAL_FORCE": "soft-auto"
+    },
+    "RAW": "set link-group 2 protect-run-mode soft-auto",
+    "RULE": "<id> protect-run-mode <physical-force | soft-manual | soft-auto>",
+    "matched_template": "set_link_group_43"
+  },
+  {
+    "verb": "set",
+    "object": "link-group",
+    "args": {
+      "ID": "2",
+      "MANUAL": "auto"
+    },
+    "RAW": "set link-group 2 protect-cutback-mode auto",
+    "RULE": "<id> protect-cutback-mode <manual | auto>",
+    "matched_template": "set_link_group_41"
+  },
+  {
+    "verb": "create",
+    "object": "redirect-group",
+    "args": {
+      "ID": "1",
+      "INTF_NAME": "XGE0/0~XGE0/15"
+    },
+    "RAW": "create redirect-group 1 intf XGE0/0~XGE0/15",
+    "RULE": "<id> intf <intf-name>",
+    "matched_template": "create_redirect_group_54"
+  },
+  {
+    "verb": "add",
+    "object": "redirect-group",
+    "args": {
+      "ID": "1",
+      "INTF_NAME": "XGE1/0~XGE1/15"
+    },
+    "RAW": "add redirect-group 1 intf XGE1/0~XGE1/15",
+    "RULE": "<id> intf <intf-name>",
+    "matched_template": "add_redirect_group_56"
+  },
+  {
+    "verb": "add",
+    "object": "redirect-group",
+    "args": {
+      "ID": "1",
+      "STRING": "3.3.3.3,255.255.255.0"
+    },
+    "RAW": "add redirect-group 1 ip 3.3.3.3,255.255.255.0",
+    "RULE": "<id> ip <string>",
+    "matched_template": "add_redirect_group_58"
+  },
+  {
+    "verb": "set",
+    "object": "redirect-group",
+    "args": {
+      "ID": "1",
+      "MAC_ADDR": "00:a5:bb:3d:c1:ac"
+    },
+    "RAW": "set redirect-group 1 mac 00:a5:bb:3d:c1:ac",
+    "RULE": "<id> mac <mac-addr>",
+    "matched_template": "set_redirect_group_60"
+  },
+  {
+    "verb": "create",
+    "object": "server-group",
+    "args": {
+      "ID": "1",
+      "IP_ADDR": "50.6.0.1",
+      "IP": "255.255.255.255"
+    },
+    "RAW": "create server-group 1 ip 50.6.0.1 mask 255.255.255.255",
+    "RULE": "<id> ip <ip_addr> mask <ip>",
+    "matched_template": "create_server_group_66"
+  }
+]

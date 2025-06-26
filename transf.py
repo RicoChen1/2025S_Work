@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 r"""
-transf.py — Excel → TextFSM template generator (v0.5)
+transf.py — Excel → TextFSM template generator (v0.6)
 ====================================================
+Changelog v0.6 (2025‑06‑25)
+---------------------------
+* **元数据生成** `transf.py` 现在为每个 `.template` 文件生成一个配套的 `.json`
+  元数据文件。这个文件包含了 `verb`, `object`, `rule`, 和 `variables` 列表，
+  为 `parser.py` 提供了必要的上下文信息，以构建结构化的输出。
+
 Changelog v0.5 (2025‑06‑22)
 ---------------------------
 * **Slash‑verbs拆分**  `bind/unbind` 这类动词现被自动 **拆成多行**：
@@ -11,13 +17,14 @@ Changelog v0.5 (2025‑06‑22)
 
 CLI 仍保持一致：
 ```bash
-python transf.py 命令树-G.xlsx              # 生成 templates/*.template
+python transf.py 命令树-G.xlsx              # 生成 templates/*.template 和 *.json
 python transf.py 命令树-G.xlsx --no-template  # 仅预览
 ```
 """
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -71,27 +78,33 @@ def parse_row(row: pd.Series, prev_v: str | None, prev_o: str | None) -> List[Tu
 
 # ---------------------------------------------------------------------------
 # Token list → TextFSM regex pattern ---------------------------------------
-# ---------------------------------------------------------------------------
 
 def slug(name: str) -> str:
-    return re.sub(r"\W+", "_", name).upper().strip("_") or "VAR"
+    """Converts a string into a valid TextFSM variable name."""
+    s = re.sub(r"\W+", "_", name).upper().strip("_") or "VAR"
+    if s and s[0].isdigit():
+        return f"V_{s}"
+    return s
 
 
-def conv_tokens(tokens: List[str]):  # → (regex_pattern, var_list)
+def conv_tokens(tokens: List[str], var_counts: dict) -> Tuple[str, List[str]]:
+    """
+    Recursively converts a list of command tokens into a regex pattern and a list of unique variable names.
+
+    Args:
+        tokens: A list of string tokens from the command definition.
+        var_counts: A dictionary to track the count of each variable name to ensure uniqueness.
+
+    Returns:
+        A tuple containing the regex pattern string and the list of unique variable names.
+    """
     parts: List[str] = []
-    vars_: List[str] = []
-    var_counts = {}  # 记录每种变量出现次数
-
-    def add_var(v):
-        count = var_counts.get(v, 0) + 1
-        var_counts[v] = count
-        v_unique = f"{v}_{count}" if count > 1 else v
-        vars_.append(v_unique)
-        parts.append(f"${{{v_unique}}}")
+    vars_list: List[str] = []
 
     for tok in tokens:
         if not tok or tok.isspace():
             continue
+
         if tok == ',':
             parts.append(',')
             continue
@@ -99,32 +112,46 @@ def conv_tokens(tokens: List[str]):  # → (regex_pattern, var_list)
             parts.append(r".*")
             continue
 
+        # Handle <variable>
         if tok.startswith('<') and tok.endswith('>'):
-            v = slug(tok[1:-1].split('|')[0])
-            add_var(v)
+            var_base_name = slug(tok[1:-1].split('|')[0])
+            count = var_counts.get(var_base_name, 0) + 1
+            var_counts[var_base_name] = count
+            unique_var_name = f"{var_base_name}_{count}" if count > 1 else var_base_name
+            vars_list.append(unique_var_name)
+            parts.append(f'${{{unique_var_name}}}')
+
+        # Handle {choice|list}
         elif tok.startswith('{') and tok.endswith('}'):
             inner = tok[1:-1]
             parts.append(r".*" if '...' in inner else f"({inner})")
+
+        # Handle [optional block]
         elif tok.startswith('[') and tok.endswith(']'):
-            inner = tok[1:-1]
-            p, sub_vars = conv_tokens(TOKEN_PATTERN.findall(inner))
-            for v in sub_vars:
-                if v not in vars_:
-                    vars_.append(v)
-            parts.append(f"(?:{p})?")
+            inner_tokens = TOKEN_PATTERN.findall(tok[1:-1])
+            pattern_part, sub_vars = conv_tokens(inner_tokens, var_counts)
+            parts.append(f"(?:{pattern_part})?")
+            vars_list.extend(sub_vars)
+        
+        # Handle literal keywords
         else:
             parts.append(escape_lit(tok))
-    return r"\s+".join(parts), vars_
+            
+    return r"\s+".join(parts), vars_list
 
 
-def build_template(cmd_body: str, tpl_id: str) -> str:
+def build_template(cmd_body: str, tpl_id: str) -> Tuple[str, List[str]]:
+    """Generates a TextFSM template and returns it with the list of variables."""
     toks = TOKEN_PATTERN.findall(cmd_body)
-    pattern, vlist = conv_tokens(toks)
+    # Start the process with an empty counter dictionary for each new command
+    pattern, vlist = conv_tokens(toks, {})
     lines = [f"# Auto-generated {tpl_id}"]
     lines += [f"Value {v} (\\S+)" for v in vlist]
-    lines.append("")  # 插入额外空行
+    lines.append("")
     lines += ["Start", rf"  ^{pattern}\s*$$ -> Record"]
-    return "\n".join(lines) + "\n"
+    template_content = "\n".join(lines) + "\n"
+    return template_content, vlist
+
 
 # ---------------------------------------------------------------------------
 # Main driver ---------------------------------------------------------------
@@ -149,7 +176,7 @@ def main():
     for _, row in df.iterrows():
         recs = parse_row(row, prev_v, prev_o)
         if recs:
-            prev_v, prev_o = recs[0][0], recs[0][1]  # update carry‑over using first split verb
+            prev_v, prev_o = recs[0][0], recs[0][1]
             records.extend(recs)
         else:
             if pd.notna(row.iloc[1]):
@@ -160,8 +187,14 @@ def main():
     if not records:
         sys.exit("No valid templates found.")
 
+    templates_path = Path(args.templates_dir)
     if not args.no_template:
-        Path(args.templates_dir).mkdir(parents=True, exist_ok=True)
+        templates_path.mkdir(parents=True, exist_ok=True)
+        # Clean up old files before generating new ones
+        for old_file in templates_path.glob("*.template"):
+            old_file.unlink()
+        for old_file in templates_path.glob("*.json"):
+            old_file.unlink()
 
     syntax_lines: List[str] = []
 
@@ -170,19 +203,29 @@ def main():
         syntax_lines.append(body + ';')
 
         if not args.no_template:
-            tmpl_txt = build_template(body, f"{verb}_{obj}_{idx}")
             safe_name = FNAME_SAFE.sub('_', f"{verb}_{obj}_{idx}")
-            (Path(args.templates_dir) / f"{safe_name}.template").write_text(tmpl_txt, encoding='utf-8')
+            
+            # Generate template and get variables
+            tmpl_txt, vlist = build_template(body, safe_name)
+            
+            # Write .template file
+            template_path = Path(args.templates_dir) / f"{safe_name}.template"
+            template_path.write_text(tmpl_txt, encoding='utf-8')
 
-    # output syntax preview or write file
-    if args.syntax_file:
-        Path(args.syntax_file).write_text("\n".join(syntax_lines), encoding='utf-8')
-        print(f"wrote {len(syntax_lines)} lines → {args.syntax_file}")
-    else:
-        print("\n".join(syntax_lines))
+            # Create and write .json metadata file
+            metadata = {
+                "verb": verb,
+                "object": obj,
+                "rule": tpl,
+                "variables": vlist,
+                "raw_command_pattern": body,
+            }
+            meta_path = Path(args.templates_dir) / f"{safe_name}.json"
+            with meta_path.open('w', encoding='utf-8') as f:
+                json.dump(metadata, f, indent=2, ensure_ascii=False)
 
     if not args.no_template:
-        print(f"generated {len(syntax_lines)} .template files → {args.templates_dir}/")
+        print(f"generated {len(syntax_lines)} .template and .json files → {args.templates_dir}/")
 
 
 if __name__ == "__main__":
