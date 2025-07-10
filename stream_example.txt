@@ -1,3 +1,13 @@
+## 添加少量手写测试
+clear intf aName count
+clear intf count
+set intf aName optical-mode info
+set intf optical-mode info
+set intf statistic
+set intf aName rate
+
+## 以下均为刘师傅提供
+## 少量测试件被修改过, 主要是大小写问题, 以及"set vpn process enable"中是否需要提供指定id号码
 add rcp user admin admin 10.10.11.62 1000
 
 set syslog status enable
@@ -1579,9 +1589,9 @@ set service 130 rule-type tcpFlag min 10 max 10
 set service 129 rule-type dpi min 4096 max 4096
 
 set service 128 rule-type six-tuple  min 10000 max 10000
-set vpn process enable
-add vpn-map-table VLAN 200 ffffffff vpn 1024 preselected
-add vpn-map-table MPLS 20 ffffffff vpn 1051 preselected
+set vpn 123456 process enable
+add vpn-map-table vlan 200 ffffffff vpn 1024 preselected
+add vpn-map-table mpls 20 ffffffff vpn 1051 preselected
 add rule service 130 tcpflag 0x32 disable static
 add rule service 130 tcpflag 0x16 disable static
 add rule service 130 tcpflag 0x0c disable static

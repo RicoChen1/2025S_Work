@@ -77,9 +77,22 @@ def main():
     if not templates:
         sys.exit(f"Error: No valid templates found in '{templates_dir}'")
 
+    # --- 2. Sort templates by specificity (most specific first) ---
+    def calculate_specificity(template):
+        score = 0
+        # Access arg_token_templates from the nested metadata
+        for token in template.get("metadata", {}).get("arg_token_templates", []):
+            if token.get("type") == "keyword" and not token.get("is_optional"):
+                score += 3  # Non-optional keywords are highly specific
+            else:
+                score += 1  # Variables and optional keywords are less specific
+        return score
+
+    templates.sort(key=calculate_specificity, reverse=True)
+
     all_results = [] # To store all parsed results
 
-    # --- 2. Process log file ---
+    # --- 3. Process log file ---
     try:
         with log_file.open('r', encoding='utf-8') as f:
             for line_num, line in enumerate(f, 1):
@@ -87,7 +100,7 @@ def main():
                 if not line:
                     continue
 
-                # --- 3. Try each pre-compiled template ---
+                # --- 4. Try each pre-compiled template ---
                 for template in templates:
                     try:
                         template["fsm"].Reset()
@@ -132,7 +145,7 @@ def main():
     except Exception as e:
         sys.exit(f"Error reading log file: {e}")
 
-    # --- 4. Write all results to output ---
+    # --- 5. Write all results to output ---
     output_target = None
     try:
         if args.output:
