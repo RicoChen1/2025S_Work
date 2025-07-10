@@ -1,0 +1,20 @@
+1. transf.py是预处理器
+2. \templates目录下包括了transf.py生成的模板文件，每一对模板包含一个template文件和一个json元数据文件, 
+3. xlsx文件是命令树
+4. parser.py是后处理器
+5. parser.py的输出是json文件
+6. 首先将xlsx文件传入transf.py，生成templates目录下的template文件和json元数据文件
+7. 然后将templates目录下的template文件和json元数据文件导入parser.py，生成json文件
+8. parser_Check.py是检查工具
+9. 不要主动编辑xlsx文件
+10.sample.txt是临时测试文件, 我会随时更改其中的内容
+11.stream_example.txt是固定测试文件
+12.如果遇到parser处理后的json文件有问题,请首先尝试进入templates目录中找到最合适的模板组合, 如果找不到或者找的不对,请打断并告知我请求人工协助
+13.textfsm库的处理能力是有限的, 考虑手动实现一部分内容
+14.固定测试stream_example.txt非常冗长, 平常只需主动看一小部分即可
+15.请不要主动编辑templates目录下的文件
+16.templates目录下的文件很多, 不建议直接list全部
+17.我们正在使用windows系统
+18.python库较新, python版本很新, 请注意一些语法可能已经被抛弃导致python编译器警告
+19.优先使用临时测试件sample.txt进行测试
+20. 生成模板库命令:  python transf.py "命令树-G.xlsx" 

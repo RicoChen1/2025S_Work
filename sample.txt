@@ -1,23 +1,6 @@
-add rcp user admin admin 10.10.11.62 1000
-set syslog status enable
-add syslog host 10.10.11.183 514
-add snmp agent viewscope aaa
-add snmp agent community public ro aaa
-create link-group 1 i2c-port-intf HGE0/0-0 c2i-port-intf HGE0/1-0
-bind link-group 1 protect-channel 4 0
-set link-group 1 protect-access-mode  pass
-create link-group 2 i2c-port-intf HGE1/0-0 c2i-port-intf HGE1/1-0
-bind link-group 2 protect-channel 4 2
-set link-group 2 protect-access-mode  pass
-set link-group 1 protect-run-mode soft-auto
-set link-group 1 protect-cutback-mode auto
-set link-group 2 protect-run-mode soft-auto
-set link-group 2 protect-cutback-mode auto
-set intf XGE0/0~XGE0/15 rx disable tx enable
-set intf XGE1/0~XGE1/15 rx disable tx enable
-create redirect-group 1 intf XGE0/0~XGE0/15
-add redirect-group 1 intf XGE1/0~XGE1/15
-add redirect-group 1 ip 3.3.3.3,255.255.255.0
-set redirect-group 1 mac 00:a5:bb:3d:c1:ac
-create server-group 1 ip 50.6.0.1 mask 255.255.255.255
-create loopback 1 ip 60.6.0.1,255.255.255.0
+clear intf aName count
+clear intf count
+set intf aName optical-mode info
+set intf optical-mode info
+set intf statistic
+set intf aName rate

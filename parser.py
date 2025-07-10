@@ -77,54 +77,88 @@ def main():
     if not templates:
         sys.exit(f"Error: No valid templates found in '{templates_dir}'")
 
+    all_results = [] # To store all parsed results
+
     # --- 2. Process log file ---
-    final_output = []
-    with log_file.open('r', encoding='utf-8') as f:
-        for line_num, line in enumerate(f, 1):
-            line = line.strip()
-            if not line:
-                continue
+    try:
+        with log_file.open('r', encoding='utf-8') as f:
+            for line_num, line in enumerate(f, 1):
+                line = line.strip()
+                if not line:
+                    continue
 
-            # --- 3. Try each pre-compiled template ---
-            for template in templates:
-                try:
-                    # Resetting is crucial for reusable FSM objects
-                    template["fsm"].Reset()
-                    parsed_result = template["fsm"].ParseText(line)
+                # --- 3. Try each pre-compiled template ---
+                for template in templates:
+                    try:
+                        template["fsm"].Reset()
+                        parsed_result = template["fsm"].ParseText(line)
 
-                    if parsed_result:
-                        metadata = template["metadata"]
-                        record = parsed_result[0]
-                        args_dict = dict(zip(metadata['variables'], record))
+                        if parsed_result:
+                            metadata = template["metadata"]
+                            record = parsed_result[0]
+                            # --- Process the match ---
+                            parsed_vars = {k: v for k, v in zip(template["fsm"].header, parsed_result[0]) if v}
 
-                        result_json = {
-                            "verb": metadata.get("verb"),
-                            "object": metadata.get("object"),
-                            "args": args_dict,
-                            "RAW": line,
-                            "RULE": metadata.get("rule"),
-                            "matched_template": template["name"]
-                        }
-                        final_output.append(result_json)
-                        break  # Move to the next line once matched
+                            # Build the final token list. Optional tokens that are not present will have a value of None.
+                            arg_tokens = []
+                            token_templates = metadata.get("arg_token_templates", [])
 
-                except Exception as e:
-                    print(f"Error on line {line_num} with template {template['name']}: {e}", file=sys.stderr)
+                            for tpl in token_templates:
+                                final_token = tpl.copy()
+                                
+                                # A token with a 'name' is a Value in the template (variable or optional keyword)
+                                if "name" in tpl:
+                                    parsed_value = parsed_vars.get(tpl["name"])
+                                    final_token["value"] = parsed_value # This will be None if not found
+                                    arg_tokens.append(final_token)
+                                
+                                # A token without a 'name' is a non-optional keyword
+                                else:
+                                    arg_tokens.append(final_token)
 
-    # --- 4. Write final result to file or stdout ---
-    output_json = json.dumps(final_output, indent=2, ensure_ascii=False)
+                            result_json = {
+                                "verb": metadata.get("verb"),
+                                "object": metadata.get("object"),
+                                "arg_tokens": arg_tokens,
+                                "RAW": line,
+                                "RULE": metadata.get("rule"),
+                                "matched_template": template["name"]
+                            }
+                            all_results.append(result_json)
+                            break  # Move to the next line once matched
 
-    if args.output:
-        try:
-            output_path = Path(args.output)
-            output_path.write_text(output_json, encoding='utf-8')
-            print(f"Success: Output written to {output_path}", file=sys.stderr)
-        except Exception as e:
-            sys.exit(f"Error: Could not write to output file '{args.output}': {e}")
-    else:
-        # Warn user about potential stdout issues
-        print(f"Warning: Printing to stdout on Windows can sometimes garble output. For guaranteed results, use the -o/--output flag to save to a file.", file=sys.stderr)
-        print(output_json)
+                    except Exception as e:
+                        print(f"Error on line {line_num} with template {template['name']}: {e}", file=sys.stderr)
+    except Exception as e:
+        sys.exit(f"Error reading log file: {e}")
+
+    # --- 4. Write all results to output ---
+    output_target = None
+    try:
+        if args.output:
+            output_target = Path(args.output).open('w', encoding='utf-8')
+        else:
+            output_target = sys.stdout
+
+        for i, result in enumerate(all_results):
+            # JSON Lines format: one JSON object per line, no pretty-printing.
+            json.dump(result, output_target, ensure_ascii=False)
+            output_target.write('\n')
+            # Add a blank line for readability, but only when writing to a file.
+            if args.output and i < len(all_results) - 1:
+                output_target.write('\n')
+        
+        if args.output:
+            print(f"Success: Output written to {args.output}", file=sys.stderr)
+
+    except Exception as e:
+        sys.exit(f"Error writing output: {e}")
+    finally:
+        if args.output and output_target:
+            output_target.close()
+        elif not args.output:
+            # Warn user about potential stdout issues
+            print(f"Warning: Printing to stdout on Windows can sometimes garble output. For guaranteed results, use the -o/--output flag to save to a file.", file=sys.stderr)
 
 
 if __name__ == "__main__":
