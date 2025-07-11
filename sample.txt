@@ -1,6 +1,0 @@
-clear intf aName count
-clear intf count
-set intf aName optical-mode info
-set intf optical-mode info
-set intf statistic
-set intf aName rate
